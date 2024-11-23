@@ -1,26 +1,25 @@
 #### Preamble ####
-# Purpose: Downloads and saves the data from [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Downloads and saves the data from GitHub
+# Author: Xuanle Zhou
+# Date: 23 November 2024
+# Contact: isabella.zhou@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: NA
+# Any other information needed? NA
 
 
 #### Workspace setup ####
-library(opendatatoronto)
 library(tidyverse)
-# [...UPDATE THIS...]
+library(readr)
 
 #### Download data ####
-# [...ADD CODE HERE TO DOWNLOAD...]
-
+cpi_url <- "https://raw.githubusercontent.com/tacookson/data/refs/heads/master/broadway-grosses/cpi.csv"
+grosses_url <- "https://raw.githubusercontent.com/tacookson/data/refs/heads/master/broadway-grosses/grosses.csv"
 
 
 #### Save data ####
-# [...UPDATE THIS...]
-# change the_raw_data to whatever name you assigned when you downloaded it.
-write_csv(the_raw_data, "inputs/data/raw_data.csv") 
+cpi_raw <- read.csv(cpi_url)
+write_csv(cpi_raw, "data/01-raw_data/cpi_raw.csv")
 
-         
+grosses_raw <- read.csv(grosses_url)
+write_csv(grosses_raw, "data/01-raw_data/grosses_raw.csv")
