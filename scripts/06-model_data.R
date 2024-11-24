@@ -1,37 +1,28 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Models for Broadway grosses data
+# Author: Xuanle Zhou
+# Date: 24 November 2024
+# Contact: isabella.zhou@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: Retrieve training data generated in 02-analysis_data
+# Any other information needed? NA
 
 
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
 
+set.seed(853)
+
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+train_data <- read_parquet("data/02-analysis_data/broadway_grosses_train_data.parquet")
 
 ### Model data ####
-first_model <-
-  stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
-  )
 
+regression_model <- lm(weekly_gross ~ avg_ticket_price + seats_in_theatre + 
+                         performances + holiday_week + Tony_Award + year, 
+                       data = train_data)
 
 #### Save model ####
-saveRDS(
-  first_model,
-  file = "models/first_model.rds"
-)
-
+saveRDS(regression_model, file = "models/regression_model.rds")
 
