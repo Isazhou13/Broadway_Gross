@@ -1,13 +1,12 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
-author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+title: "Understanding Broadway Gross: Key Factors and Growth Strategies"
+subtitle: "Positive Effects of Pricing, Seats, Performances, and Holidays, with Limited Impact During Tony Award Months"
+author: "Xuanel Zhou"
+thanks: "Code and data are available at:https://github.com/Isazhou13/Broadway_Gross"
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+toc: true
+abstract: "This study examines the key factors influencing Broadway’s weekly gross revenue using datasets from Playbill and The Broadway League. The result shows that ticket pricing, seating capacity, performance frequency, and holiday weeks positively impact gross, while Tony Award months show limited effects. Despite steady long-term growth, disruptions such as the 2016 snowstorm and COVID-19 highlight the industry’s vulnerability to external shocks. These findings provide actionable strategies, including holiday-focused marketing, and enhanced engagement during award seasons, to sustain growth and optimize Broadway’s financial performance."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -19,240 +18,854 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+library(ggplot2)
+library(knitr)
+library(arrow)
+library(here)
+library(scales) 
+
+analysis_data <- read_parquet(here("data", "02-analysis_data", "cleaned_broadway_grosses.parquet"))
 ```
 
 
-# Introduction
+# Introduction {#sec-introduction}
 
-Overview paragraph
+Broadway is a cultural and economic landmark in New York City, contributing significantly to the city's global reputation and economy. For stakeholders, understanding the drivers of Broadway revenue is essential, as it directly informs strategic decisions on pricing, scheduling, and resource allocation to maximize profitability and sustain operations. This study aims to identify and quantify the key factors influencing Broadway’s weekly gross revenue, using datasets provided by Playbill and The Broadway League.
 
-Estimand paragraph
+The estimand in this paper represents the weekly gross revenue of Broadway shows. Specifically, it examines how variables such as ticket price, theater seating capacity, number of performances, whether it is a holiday week, whether it falls in a Tony Award month, and the year influence weekly gross revenue. While the true estimand is unknown, it is approximated using the available data and model assumptions. Defining the estimand ensures the model and methodology align with the research objective and facilitates addressing potential biases from data limitations or methodological choices.
 
-Results paragraph
+The analysis, conducted using a multiple linear regression model, reveals that ticket pricing, seating capacity, performance frequency, and holiday weeks positively impact Broadway’s weekly gross revenue. Conversely, the limited impact of Tony Award months highlights opportunities for growth. While steady long-term growth is observed, disruptions such as the 2016 snowstorm and COVID-19 emphasize Broadway’s vulnerability to external shocks. 
 
-Why it matters paragraph
+These findings emphasize both the opportunities and challenges Broadway faces in maximizing its revenue. Identifying the factors that drive revenue and highlighting periods of underperformance provide a foundation for adapting to evolving market conditions. For instance, additional potential can be realized through strategies such as holiday packages, collaborations with tourism boards, and enhanced on-site experiences. Addressing the low impact of Tony Award months could involve exclusive ticket packages and increased media engagement to leverage the event’s visibility. In an era of rapid digitalization and shifting consumer preferences, Broadway must innovate and adopt targeted strategies to sustain growth and maintain its position as a global cultural icon.
 
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
-
-
-
-
+The remainder of this paper is structured as follows: @sec-data provides an overview of the dataset and visualizations of the variables. @sec-model-set-up details the modeling approach, including predictor selection and the regression model structure. @sec-results presents the primary findings and outcomes of the model. Finally, @sec-discussion explores the key findings, highlights the main takeaways, addresses the study's weaknesses, and outlines potential next steps.
 
 
 # Data {#sec-data}
 
 ## Overview
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+This study utilizes R packages [@citeR] for data cleaning and analysis, incorporating libraries from tidyverse [@tidyverse], ggplot2 [@ggplot2], knitr [@knitr], arrow [@arrow], here [@here] and scales [@scales]. The **tidyverse** package is employed for data manipulation, such as filtering, grouping, and reshaping datasets. **ggplot2** is used for data visualization, creating a range of plots to explore and present trends in the data. **knitr** facilitates the integration of analysis and reporting by generating dynamic reports in R Markdown. **arrow** is used for efficient handling of large datasets, particularly for reading and writing data in Parquet format to optimize storage and processing. The **here** package ensures reproducibility by standardizing file paths in the project directory, making it easier to locate and load data files. Finally, **scales** is employed to enhance the readability of plots by formatting axes, labels, and scales, ensuring clarity in the presentation of numeric and categorical data.
 
-Overview text
+The dataset, sourced from **Playbill**, reflects Broadway weekly grosses as reported by theatres affiliated with The Broadway League. The data cleaning process involved grouping observations and removing missing values. The final dataset consists of 14,519 observations across 10 variables: `week_ending`, `week_number`, `weekly_gross`, `avg_ticket_price`, `seats_in_threatre`, `performances`, `year`, `month`, `holiday_week` and `Tony_Award`. 
 
-## Measurement
+## Measurement and Considerations
 	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+The dataset for this study originates from Playbill, which collects information about Broadway shows through direct reporting and partnerships with industry organizations. A significant portion of the data, particularly box office grosses and performance metrics, is provided by The Broadway League, a national trade association for the Broadway industry.
+
+The transformation of real-world phenomena into the dataset begins with data collection. The Internet Broadway Database (IBDB), managed by The Broadway League, compiles comprehensive records of Broadway productions from sources such as theater programs, which detail cast and crew information. Additional data is supplemented by newspaper and magazine reports, theatrical textbooks, interviews with theater professionals, and The League's archival records. This information is then processed into key metrics, including ticket sales, attendance, revenue, and theater utilization, which are published weekly. Before release, The League’s research department verifies the data’s accuracy and removes personal information to ensure privacy.
+
+However, converting real-world phenomena into dataset entries inevitably results in the loss of important contextual details. For example, shows offering premium tickets or standing-room sales may disproportionately inflate weekly grosses compared to productions without these options. While the dataset includes a top ticket price metric, it does not specify the number of tickets sold at this price, leaving gaps in understanding revenue dynamics. Similarly, discounts and promotions, such as rush tickets or group sales, can lower the average ticket price, potentially underestimating the perceived value of tickets sold. Additionally, while the dataset provides weekly metrics, it lacks details about whether performances occurred on weekdays or weekends, further limiting insights into revenue patterns. These limitations underscore the challenges of translating complex industry data into simplified metrics for analysis.
 
 ## Outcome variables
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
-
-
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
+#| label: fig-weekly_gross
+#| fig-cap: Distribution of Broadway weekly gross.
 #| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
+# Generate a histogram for Weekly Gross Revenue
+ggplot(analysis_data, aes(x = weekly_gross)) +
+  geom_histogram(binwidth = 100000, fill = "steelblue", color = "black", alpha = 0.7) +
+  labs(
+    x = "Weekly Gross ($)",
+    y = "Number of Occurrences"
+  ) +
+  scale_x_continuous(labels = comma) +  # Format x-axis labels with commas
   theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14)
+  )
 ```
 
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
-
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
-```
-
-Talk way more about it. 
+The outcome variable of interest for this study is the weekly gross revenue for Broadway productions. The distribution, shown in @fig-weekly_gross, exhibits a right-skewed pattern. Most weeks have revenues ranging between $500,000 and $2,000,000, with a declining frequency as revenue increases. The mode of the distribution appears around $2,000,000. A small number of weeks report revenues exceeding $3,000,000, which may represent potential outliers or rare events that warrant further investigation. These high-revenue weeks could stem from unusual circumstances, such as special promotions, holiday seasons, or significant market shifts.
 
 ## Predictor variables
 
-Add graphs, tables and text.
-
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
-
-
-
-
-
-
-
-
-# Model
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
-
-## Model set-up
-
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-
-# Results
-
-Our results are summarized in @tbl-modelresults.
+### Year
 
 ```{r}
+#| label: fig-yearly
+#| fig-cap: Yearly Gross Revenue Trends for Broadway Productions, spanning from 2010 to 2019.
 #| echo: false
-#| eval: true
 #| warning: false
 #| message: false
 
-library(rstanarm)
+# Aggregate data by year
+data_yearly <- analysis_data %>%
+  mutate(year = year(week_ending)) %>%  # Extract the year from the week_ending column
+  group_by(year) %>%
+  summarise(average_weekly_gross = mean(weekly_gross, na.rm = TRUE))  # Calculate yearly averages
 
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
+# Create the plot
+ggplot(data_yearly, aes(x = year, y = average_weekly_gross)) +
+  geom_line(color = "steelblue", size = 1) +
+  labs(
+    x = "Year",
+    y = "Average Yearly Gross ($)"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(  # Adjust scale for years
+    breaks = seq(min(data_yearly$year), max(data_yearly$year), by = 1),  # One tick per year
+    labels = scales::label_number(accuracy = 1)  # Show integer year labels
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    plot.subtitle = element_text(hjust = 0.5, size = 12)
+  )
+
 ```
+
+@fig-yearly captures the Broadway industry's growth over the decade. The yearly averages were calculated by averaging the weekly gross revenue across all Broadway shows for each year. The chart shows a steady increase in average yearly gross revenue, reflecting overall industry growth. From 2013 to 2015, revenues remain relatively stable, followed by sharp growth from 2016 onward, peaking in 2019. A slight dip in 2020 likely reflects the impact of the COVID-19 pandemic on Broadway operations.
+
+```{r}
+#| label: fig-week_ending
+#| fig-cap: Weekly grossfor each Broadway show over time, spanning from 2010 to 2019. Each point represents the gross for a particular week for a specific show.
+#| echo: false
+#| warning: false
+#| message: false
+
+
+ggplot(analysis_data, aes(x = week_ending, y = weekly_gross)) +
+  geom_point(color = "steelblue", size = 0.5, alpha = 0.7) +  # Replace geom_dot with geom_point
+  labs(
+    x = "Year",
+    y = "Weekly Gross ($)",
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+  ) +
+  scale_x_date(
+    date_labels = "%Y",       # Show the year on the x-axis
+    date_breaks = "1 year"    # Add a tick for each year
+  ) +
+  scale_y_continuous(labels = comma)  # Format y-axis labels with commas
+
+
+```
+@fig-week_ending provides detailed information on weekly gross revenues, showing that most values clusters predominantly in the range of $500,000 to $2,000,000, which aligns with the histogram results shown in @fig-weekly_gross. However, there is a gradual upward trend in the maximum weekly gross over the years, indicating that the Broadway industry experienced growth during this period.
+
+Earlier years (2010–2012) show a compact distribution of weekly gross. From 2015 onward, the range widens, with both higher peaks and broader variation between the lowest and highest values, reflecting increased performance variability among Broadway shows. Notably, some shows at some weeks after 2015 exceed $3,000,000, indicating more outliers and growing disparities between top-performing shows and others, likely influenced by audience preferences, pricing, and industry growth. These peaks are more commonly observed at the end of the year, suggesting a seasonal effect, likely tied to holiday demand and special events.
+
+
+### Average price of tickets sold
+
+```{r}
+#| label: fig-avg_ticket_price
+#| fig-cap: Distribution of Average Broadway Ticket Prices
+#| echo: false
+
+# Generate a histogram for avg_ticket_price 
+ggplot(analysis_data, aes(x = avg_ticket_price)) +
+  geom_histogram(binwidth = 10, fill = "steelblue", color = "black", alpha = 0.7) +  # Customize bin width and colors
+  labs(
+    x = "Average Ticket Price ($)",
+    y = "Number of Occurrences"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+```
+@fig-avg_ticket_price shows the majority of average ticket prices are concentrated around $100, with a peak frequency between $80 and $120. The right skewed distribution, indicating that while most ticket prices are relatively affordable, there are instances of higher ticket prices extending beyond $300, with a few exceeding $500.
+
+### Theatre seat capacity
+
+```{r}
+#| label: fig-seats_in_theatre
+#| fig-cap: Distribution of Theatre Sizes Based on Number of Seats
+#| echo: false
+
+# Generate a histogram for seats_in_theatre
+ggplot(analysis_data, aes(x = seats_in_theatre)) +
+  geom_histogram(binwidth = 50, fill = "steelblue", color = "black", alpha = 0.7) +  
+  labs(
+    x = "Number of Seats in the Theatre",
+    y = "Number of Occurrences"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+
+@fig-seats_in_theatre illustrates the distribution of theatre sizes on Broadway, measured by the number of seats. The most common theatre size is around 1,000 seats, with a significantly higher frequency compared to other sizes. 
+
+### Number of performances in the week
+
+```{r}
+#| label: fig-performances
+#| fig-cap: Distribution of Performances
+#| echo: false
+
+# Generate a histogram for performances
+ggplot(analysis_data, aes(x = performances)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "black", alpha = 0.7) + 
+  scale_x_continuous(breaks = seq(0, max(analysis_data$performances, na.rm = TRUE), by = 1)) +  
+  labs(
+    x = "Number of Performances",
+    y = "Number of Occurrences"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+@fig-performances highlights the consistency in Broadway’s performance schedules, with the vast majority of shows performing 8 times per week, reaching a frequency of over 10,000 occurrences. A small number of shows have fewer or occasionally more than 8 performances per week, likely due to special events, holidays, or production adjustments.
+
+### Holiday Week
+
+```{r}
+#| label: fig-holiday_week
+#| fig-cap: Comparison of Average Weekly Gross Between Holiday and Non-Holiday Weeks
+#| echo: false
+
+# Convert holiday_week to a factor
+analysis_data <- analysis_data %>%
+  mutate(holiday_week = as.factor(holiday_week))  # Ensure holiday_week is treated as a categorical var
+# Aggregate data to calculate average weekly gross for holiday and non-holiday weeks
+aggregated_data_holiday <- analysis_data %>%
+  group_by(holiday_week) %>%  # Group by holiday status
+  summarise(avg_weekly_gross = mean(weekly_gross, na.rm = TRUE)) %>%  # Calculate average Weekly Gross
+  mutate(holiday_week = case_when(
+    holiday_week == 0 ~ "Non-Holiday Week",  # Rename 0 as "Non-Holiday Week"
+    holiday_week == 1 ~ "Holiday Week"      # Rename 1 as "Holiday Week"
+  ))
+
+# Bar chart for average weekly gross
+ggplot(aggregated_data_holiday, aes(x = holiday_week, y = avg_weekly_gross, fill = holiday_week)) +
+  geom_bar(stat = "identity", color = "black", alpha = 0.8) +  # Bar chart for aggregated data
+  scale_fill_manual(values = c("darkorange", "#9F86C0")) +  # Custom colors for holiday and non-holiday
+  labs(
+    x = "Week Type",
+    y = "Average Weekly Gross ($)",
+    fill = "Holiday Week"
+  ) +
+  scale_y_continuous(labels = scales::comma) +  # Add commas to the y-axis for readability
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    legend.position = "none"  # Remove legend since x-axis already specifies week types
+  )
+```
+Holiday weeks were identified based on the major holidays of the year and include the following:
+New Year’s Week: The week containing January 1st.
+
+- Independence Day Week: The week of July 4th.
+- Labor Day Week: The week containing Labor Day, which falls on the first Monday of September.
+- Thanksgiving Week: The week containing the fourth Thursday of November.
+- Christmas Week: The week containing December 25th.
+
+Non-holiday weeks are defined as all other weeks that do not overlap with these predefined holiday periods.
+
+The weekly gross revenue was aggregated by grouping the data into holiday and non-holiday weeks. The average weekly gross revenue for each category was then calculated by summing all weekly gross revenues within the category and dividing by the total number of weeks in that category.
+
+As shown in @fig-holiday_week, the average weekly gross revenue during holiday weeks is slightly higher than during non-holiday weeks, though the difference is relatively small. This suggests that holiday weeks may attract slightly larger audiences or higher ticket sales, due to increased leisure time and tourism. However, non-holiday weeks still maintain a comparable level of average weekly gross, demonstrating consistent revenue throughout the year.
+
+### Tony Award Period
+
+```{r}
+#| label: fig-Tony_Award
+#| fig-cap: Comparison of Weekly Gross Revenue During Tony Award and Non-Award Months
+#| echo: false
+
+# Aggregate data to calculate average weekly gross for Tony Award Period and off Period
+aggregated_data_award <- analysis_data %>%
+  group_by(Tony_Award) %>%  # Group by Tony Award status
+  summarise(avg_weekly_gross = mean(weekly_gross, na.rm = TRUE)) %>%  # Calculate average Weekly Gross
+  mutate(Tony_Award = case_when(
+    Tony_Award == 0 ~ "Off-Award Month",     # Rename 0 as "Off-Award Month"
+    Tony_Award == 1 ~ "Tony Award Month"    # Rename 1 as "Tony Award Month"
+  ))
+
+# Bar chart for average weekly gross
+ggplot(aggregated_data_award, aes(x = Tony_Award, y = avg_weekly_gross, fill = Tony_Award)) +
+  geom_bar(stat = "identity", color = "black", alpha = 0.8) +  # Bar chart for aggregated data
+  scale_fill_manual(values = c("darkorange", "#9F86C0")) +  # Custom colors for holiday and non-holiday
+  labs(
+    title = "Average Weekly Gross for Holiday vs Non-Holiday Weeks",
+    x = "Week Type",
+    y = "Average Weekly Gross ($)",
+    fill = "Holiday Week"
+  ) +
+  scale_y_continuous(labels = scales::comma) +  # Add commas to the y-axis for readability
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    legend.position = "none"  # Remove legend since x-axis already specifies week types
+  )
+```
+The Tony Awards, formally the Antoinette Perry Award for Excellence in Broadway Theatre, are the highest honors in Broadway, typically held in June to mark the end of the Broadway season. Due to COVID-19, the 2020 awards were postponed to September.
+
+The variable Tony Award Month refers to the month of the awards,  which often sees heightened media attention and anticipation. Off-Award Months include all other months, serving as a baseline for comparison.
+
+Interestingly, @fig-Tony_Award shows that the average weekly gross revenue during off-award months is slightly higher than during the Tony Award month. This unexpected outcome may stem from factors like limited new production launches or audience focus shifting toward the awards themselves rather than attending shows.
+
+# Model {#sec-model-set-up}
+
+## Model Selection
+
+Since the objective of this study is to help Broadway strategically manage and make decisions to increase gross revenue, it is crucial to select a model that effectively explains how various factors influence revenue. To achieve this goal, several models were evaluated before selecting the final approach, including simple linear regression, decision trees, and multiple linear regression, each with its own strengths and weaknesses.
+
+Simple Linear Regression is straightforward to implement, computationally efficient, and easy to interpret. It provides a clear understanding of the linear relationship between one independent variable and the dependent variable. However, the model is limited to analyzing the effect of a single predictor at a time and cannot account for the influence of multiple interacting variables. This oversimplification can lead to omitted variable bias in the context of a multivariable dataset like this one.
+
+Despite Decision Trees excel at capturing non-linear relationships and interactions between variables, they are prone to overfitting, especially in moderately sized datasets, leading to poor generalization on unseen data.
+
+Based on these considerations, **Multiple Linear Regression** was chosen. While it has limitations, such as reliance on key assumptions and sensitivity to outliers, MLR strikes a balance between simplicity, interpretability, and the ability to analyze the combined effects of multiple predictors. Its coefficients provide a clear quantification of the impact of each independent variable on weekly gross revenue, making it well-suited for understanding the underlying relationships in the data.
+
+To ensure robust evaluation and avoid overfitting, the cleaned dataset was divided into training (70%) and testing (30%) subsets. The training set was used to fit the model, while the testing set was reserved for evaluating the model's performance on unseen data. 
+
+## Model Set-up
+
+Key Assumptions:
+
+- Linearity: The relationship between the dependent variable and each predictor is linear.
+- Independence: Observations are independent of one another.
+- Homoscedasticity: Variance of residuals is constant across all levels of the independent variables.
+- Normality of Residuals: The residuals are normally distributed.
+- No Multicollinearity: Independent variables are not highly correlated with each other.
+
+Background details and diagnostics are included in [Appendix -@sec-model-details].
+
+The model in this study is designed to predict weekly gross revenue using the following predictors:
+
+- Average Ticket Price (`avg_ticket_price`): The average price of tickets sold during the week.
+- Seats in the Theater (`seats_sold`): The seating capacity of the theater.
+- Number of Performances (`performances`): The total number of performances held during the week.
+- Holiday Week Indicator (`holiday_week`): Whether the show was performed during a holiday week (1 = holiday week, 0 = otherwise).
+- Tony Award Month Indicator (`Tony_Award`) : Whether the show was performed during the Tony Award month (1 = Tony Award month, 0 = otherwise).
+- Year (`year`):  The year in which the show was performed, ranging from 2010 to 2019.
+
+The model takes the form: 
+
+\begin{align}
+\text{weekly\_gross}_i &= \beta_0 + \beta_1 \cdot \text{avg\_ticket\_price}_i + \beta_2 \cdot \text{seats\_in\_theatre}_i \\
+             &\quad + \beta_3 \cdot \text{performances}_i + \beta_4 \cdot \text{holiday\_week}_i \\ &\quad + \beta_5 \cdot \text{Tony\_Award}_i + \beta_6 \cdot \text{year}_i\epsilon_i \\
+\epsilon_i &\sim \text{Normal}(0, \sigma^2)
+\end{align}
+
+Where: 
+\begin{align}
+\beta_0 & \text{ is the intercept term} \\
+\beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6 & \text{ are the coefficients for each predictor} \\
+\sigma^2 & \text{ is the variance of the error term}
+\end{align}
+
+
+We run the model in R [@citeR] using the `stats` package from base R. The lm() function from this package was used to fit the multiple linear regression model. 
+
+## Interpretation of Coefficients
+
+- Intercept ($\beta_0$): Represents the predicted value of the weekly gross revenue when all predictors are 0. Since it is unrealistic for all predictors the intercept serves as a theoretical starting point for the model. 
+- Average Ticket Price ($\beta_1$): Measures the change in weekly gross revenue for each one-unit increase in average ticket price, assuming other predictors remain constant.
+- Seats in the Theater ($\beta_2$):Represents the additional revenue associated with a one-unit increase in the seating capacity of the theater, holding other factors constant.
+- Number of Performances ($\beta_3$): Indicates the increase in weekly gross revenue for each additional performance in the week, controlling for other variables.
+- Holiday Week ($\beta_4$): Quantifies the difference in weekly gross revenue between holiday weeks and non-holiday weeks, all else being equal.
+- Tony Award Month ($\beta_5$): Captures the difference in weekly gross revenue between weeks during the Tony Award month and other months, assuming other predictors remain unchanged.
+- Year ($\beta_6$): Reflects the annual trend, representing the average change in weekly gross revenue for each one-year increase, controlling for other variables.
+
+## Model justification
+
+We expect a negative relationship between average ticket price and weekly gross revenue, as Broadway tickets are a form of entertainment and not a necessity. As ticket prices increase, demand is likely to decrease significantly because consumers may prioritize essential expenses over discretionary spending, especially for shows that are not well-known or during off-peak periods. 
+
+The seating capacity of the theater and the number of performances are also expected to have a positive relationship with weekly gross revenue, as larger venues or more performances each week can accommodate more audience members, resulting in higher total revenue.
+
+For holiday weeks, we predict a positive effect on weekly gross revenue, as holidays often bring increased audience demand due to leisure time and tourism. Conversely, the effect of Tony Award months is less certain, as the difference in average weekly gross revenue during Tony Award months compared to other months is minimal.
+
+Finally, the year variable is included to account for long-term trends, with an expected positive effect reflecting the steady growth of Broadway's gross revenue over the years.
+
+# Results {#sec-results}
+
+The results of the multiple linear regression model is summarized in the @tbl-modelresults. The result matches with some of our expectations while deviating in other areas. 
+
+As anticipated, average ticket price, seating in yheater, and number of performances exhibit significant positive relationships with weekly gross revenue. Specifically, increases in ticket prices and theater size lead to higher gross revenue, consistent with the notion that larger venues and premium ticketing contribute to revenue growth. Similarly, the significant positive impact of the number of performances aligns with our expectation that additional shows increase overall revenue by accommodating more audiences.
+
+The findings for holiday weeks also meet initial expectations, showing a positive relationship with weekly gross revenue. This result suggests that increased demand during holiday periods effectively boosts ticket sales, contributing to higher overall revenue.
+
+However, the results for Tony Award months diverge from our initial expectations. Contrary to the assumption that Tony Award months would boost revenue due to increased demand or publicity, the coefficients for these variables are negative, indicating a slight decrease in weekly gross revenue during these periods. 
+
+Lastly, the year variable exhibits a small but positive effect, consistent with the expectation of a gradual upward trend in Broadway revenue over the years. This reflects the broader growth of the industry, potentially due to factors such as inflation. Overall, the model confirms some of our hypotheses while highlighting areas where the data does not fully align with expectations, prompting further discussion and exploration in the next section.
 
 ```{r}
 #| echo: false
 #| eval: true
 #| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| tbl-cap: Regression Results for Weekly Gross. This table displays the coefficients, standard errors, and t-statistics for the multiple linear regression model used to analyze the factors influencing weekly gross for Broadway.  
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
+# Load the regression model
+regression_model <- readRDS(here::here("models/regression_model.rds"))
+summary <- summary(regression_model)
+
+# Extract the coefficients and form a table with estimates, standard errors, and t-values
+coefficients_table <- as.data.frame(summary$coefficients[, 1:3])
+
+# Rename the columns
+colnames(coefficients_table) <- c("Coefficient", "Standard Error", "t-Statistic")
+
+# Display the table
+kable(coefficients_table, digits = 2)
+
 ```
 
 
 
 
-# Discussion
+# Discussion {#sec-discussion}
 
-## First discussion point {#sec-first-point}
+## Key Findings {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+This paper presents a multiple linear regression analysis to examine the factors influencing weekly gross on Broadway. Key predictors, including average ticket price, seating capacity, and number of performances, were found to significantly impact revenue, while holiday weeks and Tony Award months showed unexpected or non-significant effects. These findings highlight the complexity of audience behavior and the importance of operational decisions in optimizing revenue.
 
-## Second discussion point
+## Balancing Pricing, Seating Capacity, and Performance Frequency
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+Operational strategies such as ticket pricing, seating capacity, and performance frequency emerged as key drivers of weekly gross revenue, offering actionable opportunities for Broadway to increase earnings. The strong impact of average ticket price underscores the importance of implementing demand-based pricing strategies, particularly for popular or limited-run productions, where higher ticket prices can significantly boost revenue with minimal impact on attendance. For less popular shows, optimizing affordability could help maintain audience retention while still contributing to overall revenue.
 
-## Third discussion point
+Similarly, maximizing theater utilization through strategic scheduling and venue allocation is crucial for increasing revenue. Larger venues and additional performances can expand audience capacity, but Broadway managers must evaluate whether demand can sufficiently meet the increased supply. Additionally, managers must balance these strategies with logistical considerations such as performer availability, production costs, and preserving the quality of the audience experience. By carefully aligning pricing strategies with capacity optimization, Broadway can enhance revenue while ensuring sustainable long-term growth.
 
-## Weaknesses and next steps
+## Opportunities in Holiday Weeks and Tony Award Months
 
-Weaknesses and next steps should also be included.
+The model results indicate that while holiday weeks align with the expectation of increased revenue due to higher audience availability, the effects of Tony Award months challenge the assumption that they inherently boost revenue through increased media attention.
+
+During holiday weeks, families often travel or engage in special outings. New York City, home to Broadway, becomes a global attraction with iconic events like the Rockefeller Center Christmas Tree Lighting, holiday markets, and the New Year’s Eve Ball Drop in Times Square. This festive atmosphere draws millions of tourists, creating a significant opportunity for Broadway to boost gross revenue and position itself as a must-visit holiday experience.
+
+To maximize this potential and leverage its prime location, Broadway could adopt targeted strategies to make attending shows more convenient and appealing for holiday visitors. For example, collaborating with hotels, travel agencies, and tourism boards to create holiday packages that include show tickets could firmly establish Broadway as an essential part of the holiday itinerary. Additionally, enhancing the on-site experience with seasonal concessions and festive elements could further help Broadway attract more visitors during this lucrative season.
+
+For Tony Award months, the data indicates that Broadway gross remains unaffected, challenging the belief that the awards inherently drive revenue through increased media attention. While the Tony Awards generate significant publicity, the focus tends to be on a limited number of nominated or winning shows, leaving many other shows relatively unnoticed. This concentrated attention may not translate into broader attendance increases across the industry. To address this, Broadway could collaborate with media outlets to feature live broadcasts, behind-the-scenes content, and interviews with nominees to create excitement around both the awards and the shows themselves. Offering exclusive ticket packages for Tony-nominated shows during the awards season could further incentivize attendance and increase revenue. 
+
+## Sustaining Broadway’s Growth in a Rapidly Changing World
+
+The significant positive relationship between year and weekly gross revenue reflects the steady growth of Broadway over the past decade, driven by factors such as rising ticket prices, increased tourism, and the industry’s ability to attract global audiences. However, this growth trajectory also have some exceptional cases, and not valid for all time period. For instance, the sharp decline in 2016 weekly gross during winter was influenced by a severe snowstorm that forced theaters to close, disrupting public transportation and preventing both audiences and performers from attending. Similarly, the slight downturn in 2019 coincided with the onset of the COVID-19 pandemic, which had a profound impact on Broadway operations, highlighting the industry’s vulnerability to external shocks.
+
+Even with a generally positive and sustainable long-term growth trend, Broadway must adapt and innovate to keep pace with the rapid changes in today’s society. The rise of streaming platforms and the growing popularity of short-form video content present new challenges to live theater, demanding fresh approaches to attract and engage modern audiences. By embracing digital innovations while emphasizing the unique, immersive experience of live performances, Broadway can maintain its growth and continue thriving as a global cultural hub.
+
+## Weaknesses  
+
+While the paper provides valuable insights into revenue drivers, it primarily focuses on direct factors such as ticket price, seating capacity, and performance frequency. The dataset lacks critical information such as marketing efforts, show popularity, repeat attendance rates, or audience demographics. As a result, the analysis misses deeper insights into other potential variables that could offer a more comprehensive understanding of revenue dynamics.
+
+The model assumes linear relationships between predictors and weekly gross revenue. However, factors such as ticket price or performance frequency may demonstrate diminishing returns or threshold effects that are not reflected in the analysis. Furthermore, complex interactions between variables are not explored. For instance, changes in ticket price could influence consumers' willingness to buy, potentially altering demand and revenue in ways a linear model cannot fully capture.
+
+Additionally, the model assumes uniform effects of predictors across all Broadway shows, which may oversimplify the analysis. Different types of productions (e.g., musicals, plays, blockbusters, or niche shows) likely have distinct revenue dynamics that are not adequately addressed by a single model. 
+
+Moreover, the model does not account for external factors such as economic conditions, competitor pricing, or shifts in tourism trends, all of which could significantly influence Broadway revenue. These omissions limit the model's ability to fully explain variations in weekly gross revenue and highlight areas for future improvement.
+
+Another weakness of this study is its exclusive focus on analyzing gross revenue without considering the associated costs of producing and running Broadway shows. While understanding revenue drivers is crucial, gross revenue alone does not provide a complete picture of financial performance. Factors such as production expenses, marketing costs, theater rental fees, and operational overhead significantly impact profitability but are not accounted for in this analysis. Ignoring costs limits the ability to assess the net financial health of Broadway productions and could lead to incomplete or misleading conclusions about the success of certain strategies or shows.
+
+## Next Steps
+
+Incorporating additional variables, such as marketing expenditures, customer demographics, and customer experiences, could provide a deeper understanding of the factors influencing revenue. These information could be gathered in the future through detailed surveys aimed at collecting data on audience preferences, spending habits, and satisfaction levels. With this information, Broadway could develop more targeted marketing strategies tailored to different audience groups, allowing for customized promotions, pricing models, and programming that better address the unique needs of each segment, ultimately maximizing engagement and revenue.
+
+Future analyses could also employ more advanced models to address the limitations of linear assumptions. For example, exploring non-linear relationships and interaction effects between variables, such as the interplay between ticket prices and theater size or the varying impact of holiday weeks on revenue, could reveal important dynamics. 
+
+Additionally, conducting separate analyses for different types of productions, such as traditional shows versus new or experimental productions, would help identify the unique revenue drivers for each category. This segmentation would enable more precise strategy recommendations tailored to the specific needs and performance characteristics of different types of Broadway shows. Also, combining these advanced analyses with cost considerations would offer a holistic approach to optimizing Broadway’s economic sustainability.
 
 \newpage
 
 \appendix
 
-# Appendix {-}
+# Appendix: Idealized Methodology and Survey {#sec-Appendix1}
 
+## Objective and Overview
 
-# Additional data details
+The purpose of this appendix is to outline an idealized methodology and survey design to supplement the current analysis of Broadway’s weekly gross revenue. By incorporating additional survey data and addressing gaps in the existing dataset, this methodology aims to enhance the understanding of revenue drivers, audience behaviors, and market dynamics. The survey is designed to capture demographic, behavioral, and experiential data that complement the operational metrics already analyzed in the study.
 
-# Model details {#sec-model-details}
+## Core Objectives
 
-## Posterior predictive check
+- To gather audience demographics (e.g., age, income, location) to understand their influence on ticket purchases and attendance patterns. This information can be integrated into the model to enhance its predictive accuracy.
+- To identify purchasing behaviors, such as repeat attendance, pricing sensitivity, and group sales, providing a foundation for refining marketing and pricing strategies.
+- To assess audience motivations and satisfaction, focusing on factors driving show selection and overall theater experience, offering guidance on how to improve Broadway’s organizational and operational strategies.
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+## Sampling Strategy
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+Our sampling strategy utilizes **random sampling** to ensure unbiased representation of Broadway audiences. This approach randomly selects participants from the overall population of Broadway ticket buyers and attendees, minimizing potential biases and ensuring the sample reflects the diversity of the audience.
 
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
+Random sampling provides a robust foundation for generalizable analysis, capturing a wide range of perspectives and behaviors without targeting specific subgroups. By employing this method, the study aims to produce reliable and comprehensive insights into the factors influencing Broadway’s attendance and revenue dynamics.
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
+A minimum sample size of 1,000 responses per quarter is proposed to ensure statistical robustness across strata and account for seasonality.
 
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
+## Recruitment Strategy
 
-## Diagnostics
+Participants will be recruited through a combination of:
 
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
+- **In-Theater Surveys**: Surveys distributed at participating Broadway theaters, targeting audiences immediately after the performance for real-time feedback.
+- **Online Platforms**: Email invitations to ticket buyers, links embedded in ticket purchase confirmations, and social media outreach via official Broadway channels.
+- **Tourism Partnerships**: Collaborations with NYC tourism boards, hotels, and travel agencies to engage out-of-town visitors.
+- **Incentives**: Offering discounts on future ticket purchases or exclusive merchandise as incentives for survey participation.
 
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
+## Data Validation and Quality Assurance
 
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
+- **Data Triangulation**: Responses will be cross-referenced with transactional data from ticket sales to validate self-reported behaviors.
+- **Pretesting**: Pilot surveys will be conducted to test question clarity, response rates, and overall survey design effectiveness.
+- **Anonymity and Privacy**: Personal data will be anonymized to encourage honest responses and comply with privacy regulations.
 
-plot(first_model, "trace")
+## Survey Design Considerations
+The survey is designed to be comprehensive but concise, ensuring high response rates while capturing actionable data. Key design considerations include:
 
-plot(first_model, "rhat")
-```
+- **Question Types**: A mix of multiple-choice, Likert scale, and open-ended questions to balance structured data collection with qualitative insights.
+- **Clarity**: Simple, jargon-free language to ensure accessibility for diverse audiences.
 
+**Focus Areas:**
 
+- Demographics: Age, income, location, gender, and education level.
+- Attendance Behavior: Frequency of attendance, motivations, and purchasing habits.
+- Experience Metrics: Satisfaction levels, likelihood of future attendance, and feedback on show quality.
+- Pricing Sensitivity: Perceptions of ticket affordability and willingness to pay for premium experiences.
+
+### Broadway Audience Survey Form
+
+**Introduction:**
+
+Thank you for taking the time to participate in this survey. Your feedback will help us understand Broadway audiences better and improve the overall experience. 
+
+Please Note:
+
+- All responses will be kept strictly confidential.
+- Your participation is entirely voluntary.
+- We kindly request that you answer all questions honestly and to the best of your knowledge.
+- The survey is estimated to take approximately 10 minutes to complete.
+- If you have any inquiries or concerns regarding this survey, please don’t hesitate to contact the research team at **isabella.zhou@mail.utoronto.ca**.
+
+Your contribution to this study is greatly appreciated! Each participant will be entered into a lottery with a chance to win a **$100 gift card redeemable for any Broadway show of your choice**.
+
+**Section 1: About You**
+
+What is your age ?
+
+- Under 18
+- 18–24
+- 25–34
+- 35–49
+- 50–64
+- 65 or older
+
+What sex were you assigned at birth, on your original birth certificate?
+
+- Female
+- Male
+
+How do you currently describe yourself (mark all that apply)?
+
+- Female
+- Male
+- Transgender 
+- I use a different term [free-text]
+
+Where do you currently live?
+
+- Manhattan
+- Brooklyn
+- Queens
+- Bronx
+- Staten Island
+- Other New York City Borough: ____________
+- Outside NYC (please specify): ____________
+
+What is your annual household income (before taxes)?
+
+- Less than $25,000
+- $25,000–$49,999
+- $50,000–$74,999
+- $75,000–$99,999
+- $100,000–$149,999
+- $150,000–$249,999
+- $250,000 or more
+
+How far in advance do you typically purchase Broadway tickets?
+
+- Less than a week
+- 1–2 weeks
+- 3–4 weeks
+- 1–2 months
+- 3 months or more
+
+**Section 2: Broadway Attendance and Ticket Purchases**
+
+How many Broadway shows have you attended in the past 12 months?
+
+- None
+- 1–2
+- 3–5
+- 6–10
+- 11 or more
+
+Have you seen this show before?
+
+- Yes
+- No
+
+What motivates you to attend Broadway shows? (Check all that apply)
+
+- Specific performers
+- Storyline or theme of the show
+- Award recognition (e.g., Tony Awards)
+- Recommendations from friends or family
+- Discounts or promotions
+- Other (please specify): ____________
+
+How much did you pay for your most recent Broadway ticket (including fees)?
+
+- Less than $99
+- $100–$149
+- $150–$199
+- $200–$249
+- $250–$299
+- $300–$349
+- $350 or more
+
+How do you usually purchase tickets?
+
+- Online via website or app
+- At the theater box office
+- Through group sales or subscriptions
+- Other (please specify): ____________
+
+**Section 3: Experience and Preferences**
+
+How satisfied were you with the last Broadway show you attended?
+
+- Very satisfied
+- Satisfied
+- Neutral
+- Dissatisfied
+- Very dissatisfied
+
+What factors most influenced your satisfaction? (Check all that apply)
+
+- Quality of performance
+- Cast or performers
+- Theater amenities (e.g., seating, concessions)
+- Ticket price relative to experience
+- Other (please specify): ____________
+
+What would improve your Broadway experience? (Check all that apply)
+
+- Lower ticket prices
+- Easier ticket access
+- More diverse productions
+- Enhanced theater amenities
+- Other (please specify): ____________
+
+When do you typically attend Broadway shows? (Check all that apply)
+
+- Weekdays
+- Weekends
+- Holiday weeks (e.g., Thanksgiving, Christmas, New Year’s Week, (please specify): ____________
+- Tony Award months (typically June)
+
+Where do you typically hear about Broadway shows? (Check all that apply)
+
+- Social Media (e.g., Instagram, Facebook, Twitter)
+- Online ads or newsletters
+- Word of mouth
+- Print media (e.g., newspapers, magazines)
+- Other (please specify): ____________
+
+**Section 4: Future Engagement**
+
+How likely are you to attend another Broadway show in the next 6 months?
+
+- Very likely
+- Somewhat likely
+- Neutral
+- Somewhat unlikely
+- Very unlikely
+
+What factors might prevent you from attending more Broadway shows?
+
+- High ticket prices
+- Lack of time
+- Lack of interest in available productions
+- Other (please specify): ____________
+
+What additional suggestions do you have to improve the Broadway experience?
+
+**End Message:**
+
+Thank you for participating! Your feedback will play a vital role in enhancing the Broadway experience for future audiences. If you have any questions about this survey or would like to be informed about the results, please contact **isabella.zhou@mail.utoronto.ca**
 
 \newpage
 
+# Appendix: Additional Broadway Surveys and Data {#sec-Appendix2}
+
+Besides the dataset used for this study, Broadway also conducts several key surveys to gather comprehensive data on various aspects of Broadway theatre. However, the information and datasets collected through these surveys are not publicly accessible for analysis. If this data were made available, merging it with the current dataset could provide a more robust model for gross analysis. These surveys include **The Demographics of the Broadway Audience**, which is designed to provide insights into the composition and behavior of Broadway theatregoers.
+
+- **Sampling Method**: The survey is typically conducted annually, with performances selected quarterly to ensure a representative sample of Broadway's diverse offerings. This approach captures seasonal variations in the audience and provides a balanced dataset
+- **Recruitment Method**: 
+  - In-Person Distribution: Questionnaires are handed out to audience members during selected performances.
+  - Online Access: Audiences can complete the survey online via a QR code provided at performances or through a link sent post-event.
+  - Wi-Fi Login Prompt: Patrons connecting to a theatre’s Wi-Fi are also invited to participate in the survey.
+These varied recruitment strategies aim to ensure a high response rate and broad representation of attendees.
+
+Broadway also records and analyzes additional information, such as Broadway's Economic Contribution to New York City, the Audience for Touring Broadway, and the Economic Impact of Touring Broadway. These surveys and studies help capture broader insights into Broadway's influence and reach, contributing to a more comprehensive understanding of its role in the cultural and economic landscape.
+
+\newpage
+
+# Appendix: Model details {#sec-model}
+
+## Diagnostics
+
+```{r}
+#| echo: false
+#| label: fig-diagnosis-1
+#| fig-cap: Diagnostic Plots for Regression Model Residuals. Residuals vs Fitted values, Q-Q Plot of residuals, Scale-Location plot, and Residuals vs Leverage, used to assess the assumptions of the multiple linear regression model.
+#| warning: false
+#| message: false
+#| fig.width: 10
+#| fig.height: 7
+
+par(mfrow = c(2, 2))  
+plot(regression_model)
+```
+
+As shown in @fig-diagnosis-1, these diagnostic plots indicate potential violations of the linear regression assumptions, suggesting the need for model refinements or transformations. 
+
+The curved pattern in the Residuals vs Fitted plot points to possible non-linearity, while the tails in the Q-Q plot highlight deviations from normality. Additionally, the trend observed in the Scale-Location plot suggests heteroscedasticity. Furthermore, the Residuals vs Leverage plot reveals points with high leverage and large residuals, indicating potential outliers that may disproportionately influence the model.
+
+\newpage
+## Mean Squared Error and Mean Absolute Error on Test Data
+
+```{r}
+#| echo: false
+#| label: tbl-MSE
+#| tbl-cap: Calculate Mean Squared Error (MSE) on Test Data
+#| warning: false
+#| message: false
+
+# Load the test dataset
+analysis_data_test <- read_parquet(here("data", "02-analysis_data", "broadway_grosses_test_data.parquet"))
+
+# Predicted and actual values
+predicted_values <- predict(regression_model, newdata = analysis_data_test)
+actual_values <- analysis_data_test$weekly_gross
+
+# Calculate evaluation metrics
+# Mean Squared Error (MSE)
+mse <- mean((predicted_values - actual_values)^2)
+
+# Mean Absolute Error (MAE)
+mae <- mean(abs(predicted_values - actual_values))
+
+# R-squared
+ss_total <- sum((actual_values - mean(actual_values))^2) # Total sum of squares
+ss_residual <- sum((predicted_values - actual_values)^2) # Residual sum of squares
+r_squared <- 1 - (ss_residual / ss_total)
+
+# Combine metrics into a data frame for display
+metrics_df <- data.frame(
+  Metric = c("Mean Squared Error (MSE)", "Mean Absolute Error (MAE)", "R-squared"),
+  Value = c(
+    comma(round(mse, 2)),          # Format MSE with commas and 2 decimals
+    comma(round(mae, 2)),          # Format MAE with commas and 2 decimals
+    round(r_squared, 2)            # Format R-squared to 2 decimals
+  )
+)
+
+# Display the metrics in a readable table format
+kable(metrics_df, caption = "Model Performance Metrics", format = "markdown")
+
+
+```
+
+From @tbl-MSE, MSE measures the average squared prediction error. MAE represents the average prediction error magnitude. R-squared indicates that the model explains 83% of the variance in weekly gross revenue.
+
+## Multicollinearity Check on the Training Data
+
+```{r}
+#| echo: false
+#| label: fig-correlation
+#| fig-cap: Correlation Matrix between variables
+#| warning: false
+#| message: false
+
+library(corrplot)
+analysis_data_train <- read_parquet(here("data", "02-analysis_data", "broadway_grosses_train_data.parquet"))
+
+# Calculate the correlation matrix
+cor_matrix <- cor(analysis_data_train[, c("avg_ticket_price", "seats_in_theatre", "performances", "holiday_week", "Tony_Award", "year")], use = "complete.obs")
+
+# Rename the row and column names of the correlation matrix to remove underscores
+colnames(cor_matrix) <- gsub("_", " ", colnames(cor_matrix))
+rownames(cor_matrix) <- gsub("_", " ", rownames(cor_matrix))
+
+# Create a beautiful correlation plot with modified labels
+corrplot(
+  cor_matrix, 
+  method = "color",      
+  type = "upper",        
+  addCoef.col = "black", 
+  tl.col = "black",      
+  tl.srt = 45,          
+  number.cex = 0.8,      
+  col = colorRampPalette(c("red", "white", "blue"))(200) )
+
+```
+
+
+In @fig-correlation, a correlation check is performed. The matrix confirms the assumption of low multicollinearity among predictors, supporting the reliability of coefficient estimates in the regression model.
+
+# Additional Visulization
+```{r}
+#| label: fig-facet-by-year
+#| fig-cap: Average Weekly Gross Revenue Trends Across Months, spanning from 2010 to 2019.
+#| echo: false
+#| warning: false
+#| message: false
+# Facet the plot by Year
+
+# Aggregate by month
+data_monthly <- analysis_data %>%
+  mutate(month = floor_date(week_ending, "month")) %>%
+  group_by(month) %>%
+  summarise(average_weekly_gross = mean(weekly_gross, na.rm = TRUE))
+
+data_monthly <- data_monthly %>%
+  mutate(
+    year = year(month),                        # Extract year
+    month_label = month(month, label = TRUE)  # Extract month name (label)
+  )
+
+# Create the faceted plot
+ggplot(data_monthly, aes(x = month_label, y = average_weekly_gross, group = year)) +
+  geom_line(color = "blue", size = 1) +
+  labs(
+    x = "Month",
+    y = "Average Weekly Gross Revenue ($)"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ year, ncol = 3) + # Facet by year, 3 columns
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+  )
+
+data_monthly <- data_monthly %>%
+  mutate(year = as.factor(year))  # Convert year to a factor
+
+```
+\newpage
+
+# Acknowledgements
+
+Thanks to Open AI and ChatGPT 4o is used to write the paper.
+
+This study utilizes R packages [@citeR] for data cleaning and analysis, incorporating libraries from tidyverse [@tidyverse], ggplot2 [@ggplot2], knitr [@knitr], arrow [@arrow], here [@here] and scales [@scales].
 
 # References
 
