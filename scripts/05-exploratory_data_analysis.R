@@ -17,7 +17,7 @@ library(scales)
 library(dplyr)
 
 #### Read data ####
-analysis_data <- read_parquet("data/02-analysis_data/broadway_grosses_train_data.parquet")
+analysis_data <- read_parquet("data/02-analysis_data/cleaned_broadway_grosses.parquet")
 colnames(analysis_data)
 
 ### EDA ####
@@ -38,21 +38,23 @@ ggplot(analysis_data, aes(x = weekly_gross)) +
     axis.title.y = element_text(size = 14)
   )
 
-# Generate a line chart for weekly gross change for each observations
-ggplot(analysis_data, aes(x = week_ending, y = weekly_gross)) + 
-  geom_line(color = "blue") + 
+# Generate a dot chart for weekly gross change for each observations
+ggplot(analysis_data, aes(x = week_ending, y = weekly_gross)) +
+  geom_point(color = "steelblue", size = 0.5, alpha = 0.7) +  # Replace geom_dot with geom_point
   labs(
-    title = "Weekly Gross Change Over the Year",
     x = "Year",
-    y = "Weekly Gross"
-  ) + 
-  theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    y = "Weekly Gross ($)",
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+  ) +
   scale_x_date(
     date_labels = "%Y",       # Show the year on the x-axis
     date_breaks = "1 year"    # Add a tick for each year
-  ) +  
-  scale_y_continuous(labels = comma)  
+  ) +
+  scale_y_continuous(labels = comma)  # Format y-axis labels with commas
 
 
 # Aggregate by month

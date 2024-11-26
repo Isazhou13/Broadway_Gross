@@ -58,7 +58,7 @@ cleaned_data <- cleaned_data %>%
 cleaned_data <- cleaned_data %>%
   mutate(
     holiday_week = if_else(
-      week_number %in% c(1, 27, 28, 36, 47, 48, 52), 
+      week_number %in% c(4,5,15,26,27,31,32), 
       1, 
       0
     )
