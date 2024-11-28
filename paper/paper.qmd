@@ -34,9 +34,9 @@ Broadway is a cultural and economic landmark in New York City, contributing sign
 
 The estimand in this paper represents the weekly gross revenue of Broadway shows. Specifically, it examines how variables such as ticket price, theater seating capacity, number of performances, whether it is a holiday week, whether it falls in a Tony Award month, and the year influence weekly gross revenue. While the true estimand is unknown, it is approximated using the available data and model assumptions. Defining the estimand ensures the model and methodology align with the research objective and facilitates addressing potential biases from data limitations or methodological choices.
 
-The analysis, conducted using a multiple linear regression model, reveals that ticket pricing, seating capacity, performance frequency, and holiday weeks positively impact Broadway’s weekly gross revenue. Conversely, the limited impact of Tony Award months highlights opportunities for growth. While steady long-term growth is observed, disruptions such as the 2016 snowstorm and COVID-19 emphasize Broadway’s vulnerability to external shocks. 
+The analysis, conducted using a multiple linear regression model, shows that ticket pricing, seating capacity, performance frequency, and holiday weeks positively impact Broadway’s weekly gross revenue. Conversely, the limited impact of Tony Award months highlights opportunities for growth. While steady long-term growth is observed, disruptions such as the 2016 snowstorm and COVID-19 emphasize Broadway’s vulnerability to external shocks. 
 
-These findings emphasize both the opportunities and challenges Broadway faces in maximizing its revenue. Identifying the factors that drive revenue and highlighting periods of underperformance provide a foundation for adapting to evolving market conditions. For instance, additional potential can be realized through strategies such as holiday packages, collaborations with tourism boards, and enhanced on-site experiences. Addressing the low impact of Tony Award months could involve exclusive ticket packages and increased media engagement to leverage the event’s visibility. In an era of rapid digitalization and shifting consumer preferences, Broadway must innovate and adopt targeted strategies to sustain growth and maintain its position as a global cultural icon.
+These findings emphasize both the opportunities and challenges Broadway faces in maximizing its revenue. Identifying the factors that drive revenue and highlighting periods of underperformance provide a foundation for adapting to evolving market conditions. For instance, additional potential can be realized through strategies such as holiday packages, collaborations with tourism boards, and enhanced on-site experiences. To address the low impact of Tony Award months, strategies could include offering exclusive ticket packages and enhancing media engagement to capitalize on the event's visibility. In an era of rapid digitalization and shifting consumer preferences, Broadway must innovate and adopt targeted strategies to sustain growth and maintain its position as a global cultural icon.
 
 The remainder of this paper is structured as follows: @sec-data provides an overview of the dataset and visualizations of the variables. @sec-model-set-up details the modeling approach, including predictor selection and the regression model structure. @sec-results presents the primary findings and outcomes of the model. Finally, @sec-discussion explores the key findings, highlights the main takeaways, addresses the study's weaknesses, and outlines potential next steps.
 
@@ -53,9 +53,9 @@ The dataset, sourced from **Playbill**, reflects Broadway weekly grosses as repo
 	
 The dataset for this study originates from Playbill, which collects information about Broadway shows through direct reporting and partnerships with industry organizations. A significant portion of the data, particularly box office grosses and performance metrics, is provided by The Broadway League, a national trade association for the Broadway industry.
 
-The transformation of real-world phenomena into the dataset begins with data collection. The Internet Broadway Database (IBDB), managed by The Broadway League, compiles comprehensive records of Broadway productions from sources such as theater programs, which detail cast and crew information. Additional data is supplemented by newspaper and magazine reports, theatrical textbooks, interviews with theater professionals, and The League's archival records. This information is then processed into key metrics, including ticket sales, attendance, revenue, and theater utilization, which are published weekly. Before release, The League’s research department verifies the data’s accuracy and removes personal information to ensure privacy.
+The transformation of real-world phenomena into the dataset begins with data collection. The Internet Broadway Database (IBDB), maintained by The Broadway League, compiles detailed records of Broadway productions using sources like theater programs to document cast and crew information. Additional data is supplemented by newspaper and magazine reports, theatrical textbooks, interviews with theater professionals, and The League's archival records. This information is then processed into key metrics, including ticket sales, attendance, revenue, and theater utilization, which are published weekly. Before release, The League’s research department verifies the data’s accuracy and removes personal information to ensure privacy.
 
-However, converting real-world phenomena into dataset entries inevitably results in the loss of important contextual details. For example, shows offering premium tickets or standing-room sales may disproportionately inflate weekly grosses compared to productions without these options. While the dataset includes a top ticket price metric, it does not specify the number of tickets sold at this price, leaving gaps in understanding revenue dynamics. Similarly, discounts and promotions, such as rush tickets or group sales, can lower the average ticket price, potentially underestimating the perceived value of tickets sold. Additionally, while the dataset provides weekly metrics, it lacks details about whether performances occurred on weekdays or weekends, further limiting insights into revenue patterns. These limitations underscore the challenges of translating complex industry data into simplified metrics for analysis.
+However, converting real-world phenomena into dataset entries inevitably results in the loss of important contextual details. For example, shows offering premium tickets or standing-room sales may disproportionately inflate weekly grosses compared to productions without these options. While the dataset includes a top ticket price metric, it does not specify the number of tickets sold at this price, leaving gaps in understanding revenue dynamics. Similarly, discounts and promotions, such as rush tickets or group sales, can lower the average ticket price, potentially underestimating the perceived value of tickets sold. Additionally, although the dataset includes weekly metrics, it does not specify whether performances took place on weekdays or weekends, limiting the analysis of gross patterns. These limitations underscore the challenges of translating complex industry data into simplified metrics for analysis.
 
 ## Outcome variables
 
@@ -270,6 +270,7 @@ New Year’s Week: The week containing January 1st.
 - Labor Day Week: The week containing Labor Day, which falls on the first Monday of September.
 - Thanksgiving Week: The week containing the fourth Thursday of November.
 - Christmas Week: The week containing December 25th.
+- New Year's Week: The week of the January 1st.
 
 Non-holiday weeks are defined as all other weeks that do not overlap with these predefined holiday periods.
 
@@ -322,7 +323,7 @@ Interestingly, @fig-Tony_Award shows that the average weekly gross revenue durin
 
 ## Model Selection
 
-Since the objective of this study is to help Broadway strategically manage and make decisions to increase gross revenue, it is crucial to select a model that effectively explains how various factors influence revenue. To achieve this goal, several models were evaluated before selecting the final approach, including simple linear regression, decision trees, and multiple linear regression, each with its own strengths and weaknesses.
+The objective of this study is to assist Broadway in strategically managing and making decisions to increase gross revenue, making it essential to choose a model that accurately explains the factors influencing revenue.To achieve this goal, several models were evaluated before selecting the final approach, including simple linear regression, decision trees, and multiple linear regression, each with its own strengths and weaknesses.
 
 Simple Linear Regression is straightforward to implement, computationally efficient, and easy to interpret. It provides a clear understanding of the linear relationship between one independent variable and the dependent variable. However, the model is limited to analyzing the effect of a single predictor at a time and cannot account for the influence of multiple interacting variables. This oversimplification can lead to omitted variable bias in the context of a multivariable dataset like this one.
 
@@ -401,7 +402,7 @@ The findings for holiday weeks also meet initial expectations, showing a positiv
 
 However, the results for Tony Award months diverge from our initial expectations. Contrary to the assumption that Tony Award months would boost revenue due to increased demand or publicity, the coefficients for these variables are negative, indicating a slight decrease in weekly gross revenue during these periods. 
 
-Lastly, the year variable exhibits a small but positive effect, consistent with the expectation of a gradual upward trend in Broadway revenue over the years. This reflects the broader growth of the industry, potentially due to factors such as inflation. Overall, the model confirms some of our hypotheses while highlighting areas where the data does not fully align with expectations, prompting further discussion and exploration in the next section.
+Lastly, the year variable exhibits a small but positive effect, consistent with the expectation of a gradual upward trend in Broadway revenue over the years. This reflects the broader growth of the industry, potentially due to factors such as inflation. Overall, the model confirms some hypotheses while highlighting discrepancies in the data, prompting further discussion and analysis in the next section.
 
 ```{r}
 #| echo: false
@@ -438,7 +439,7 @@ This paper presents a multiple linear regression analysis to examine the factors
 
 Operational strategies such as ticket pricing, seating capacity, and performance frequency emerged as key drivers of weekly gross revenue, offering actionable opportunities for Broadway to increase earnings. The strong impact of average ticket price underscores the importance of implementing demand-based pricing strategies, particularly for popular or limited-run productions, where higher ticket prices can significantly boost revenue with minimal impact on attendance. For less popular shows, optimizing affordability could help maintain audience retention while still contributing to overall revenue.
 
-Similarly, maximizing theater utilization through strategic scheduling and venue allocation is crucial for increasing revenue. Larger venues and additional performances can expand audience capacity, but Broadway managers must evaluate whether demand can sufficiently meet the increased supply. Additionally, managers must balance these strategies with logistical considerations such as performer availability, production costs, and preserving the quality of the audience experience. By carefully aligning pricing strategies with capacity optimization, Broadway can enhance revenue while ensuring sustainable long-term growth.
+Maximizing theater utilization through strategic scheduling and venue allocation is key to increasing revenue. Larger venues and additional performances can expand audience capacity, but Broadway managers must evaluate whether demand can sufficiently meet the increased supply. Additionally, managers must balance these strategies with logistical considerations such as performer availability, production costs, and preserving the quality of the audience experience. By carefully aligning pricing strategies with capacity optimization, Broadway can enhance revenue while ensuring sustainable long-term growth.
 
 ## Opportunities in Holiday Weeks and Tony Award Months
 
@@ -446,19 +447,19 @@ The model results indicate that while holiday weeks align with the expectation o
 
 During holiday weeks, families often travel or engage in special outings. New York City, home to Broadway, becomes a global attraction with iconic events like the Rockefeller Center Christmas Tree Lighting, holiday markets, and the New Year’s Eve Ball Drop in Times Square. This festive atmosphere draws millions of tourists, creating a significant opportunity for Broadway to boost gross revenue and position itself as a must-visit holiday experience.
 
-To maximize this potential and leverage its prime location, Broadway could adopt targeted strategies to make attending shows more convenient and appealing for holiday visitors. For example, collaborating with hotels, travel agencies, and tourism boards to create holiday packages that include show tickets could firmly establish Broadway as an essential part of the holiday itinerary. Additionally, enhancing the on-site experience with seasonal concessions and festive elements could further help Broadway attract more visitors during this lucrative season.
+To fully utilize its prime location, Broadway could implement targeted strategies to make attending shows more convenient and attractive for holiday visitors. For example, collaborating with hotels, travel agencies, and tourism boards to create holiday packages that include show tickets could firmly establish Broadway as an essential part of the holiday itinerary. Additionally, enhancing the on-site experience with seasonal concessions and festive elements could further help Broadway attract more visitors during this lucrative season.
 
 For Tony Award months, the data indicates that Broadway gross remains unaffected, challenging the belief that the awards inherently drive revenue through increased media attention. While the Tony Awards generate significant publicity, the focus tends to be on a limited number of nominated or winning shows, leaving many other shows relatively unnoticed. This concentrated attention may not translate into broader attendance increases across the industry. To address this, Broadway could collaborate with media outlets to feature live broadcasts, behind-the-scenes content, and interviews with nominees to create excitement around both the awards and the shows themselves. Offering exclusive ticket packages for Tony-nominated shows during the awards season could further incentivize attendance and increase revenue. 
 
-## Sustaining Broadway’s Growth in a Rapidly Changing World
+## Sustaining Broadway’s Growth in the Changing World
 
-The significant positive relationship between year and weekly gross revenue reflects the steady growth of Broadway over the past decade, driven by factors such as rising ticket prices, increased tourism, and the industry’s ability to attract global audiences. However, this growth trajectory also have some exceptional cases, and not valid for all time period. For instance, the sharp decline in 2016 weekly gross during winter was influenced by a severe snowstorm that forced theaters to close, disrupting public transportation and preventing both audiences and performers from attending. Similarly, the slight downturn in 2019 coincided with the onset of the COVID-19 pandemic, which had a profound impact on Broadway operations, highlighting the industry’s vulnerability to external shocks.
+The significant positive relationship between year and weekly gross revenue reflects the steady growth of Broadway over the past decade, driven by factors such as rising ticket prices, increased tourism, and the industry’s ability to attract global audiences. However, this growth trajectory also have some exceptional cases, and not valid for all time period. For instance, the sharp decline in 2016 weekly gross during winter was influenced by a severe snowstorm that forced theaters to close, disrupting public transportation and preventing both audiences and performers from attending. Similarly, the slight downturn in 2019 coincided with the onset of the COVID-19 pandemic, which led to theater closures, halted performances, and a collapse in ticket sales, exposing Broadway’s reliance on in-person attendance and its vulnerability to external disruptions.
 
 Even with a generally positive and sustainable long-term growth trend, Broadway must adapt and innovate to keep pace with the rapid changes in today’s society. The rise of streaming platforms and the growing popularity of short-form video content present new challenges to live theater, demanding fresh approaches to attract and engage modern audiences. By embracing digital innovations while emphasizing the unique, immersive experience of live performances, Broadway can maintain its growth and continue thriving as a global cultural hub.
 
 ## Weaknesses  
 
-While the paper provides valuable insights into revenue drivers, it primarily focuses on direct factors such as ticket price, seating capacity, and performance frequency. The dataset lacks critical information such as marketing efforts, show popularity, repeat attendance rates, or audience demographics. As a result, the analysis misses deeper insights into other potential variables that could offer a more comprehensive understanding of revenue dynamics.
+The paper provides a detailed analysis of revenue drivers but focuses mainly on direct factors such as ticket prices, seating capacity, and performance frequency. The dataset does not include information on marketing efforts, show popularity, repeat attendance rates, or audience demographics. As a result, the analysis overlooks other potential variables that could provide a fuller understanding of revenue dynamics.
 
 The model assumes linear relationships between predictors and weekly gross revenue. However, factors such as ticket price or performance frequency may demonstrate diminishing returns or threshold effects that are not reflected in the analysis. Furthermore, complex interactions between variables are not explored. For instance, changes in ticket price could influence consumers' willingness to buy, potentially altering demand and revenue in ways a linear model cannot fully capture.
 
@@ -466,16 +467,15 @@ Additionally, the model assumes uniform effects of predictors across all Broadwa
 
 Moreover, the model does not account for external factors such as economic conditions, competitor pricing, or shifts in tourism trends, all of which could significantly influence Broadway revenue. These omissions limit the model's ability to fully explain variations in weekly gross revenue and highlight areas for future improvement.
 
-Another weakness of this study is its exclusive focus on analyzing gross revenue without considering the associated costs of producing and running Broadway shows. While understanding revenue drivers is crucial, gross revenue alone does not provide a complete picture of financial performance. Factors such as production expenses, marketing costs, theater rental fees, and operational overhead significantly impact profitability but are not accounted for in this analysis. Ignoring costs limits the ability to assess the net financial health of Broadway productions and could lead to incomplete or misleading conclusions about the success of certain strategies or shows.
+Another weakness of this study is its exclusive focus on analyzing gross revenue without considering the associated costs of producing and running Broadway shows. While understanding revenue drivers is important, gross revenue alone does not provide a complete picture of financial performance. Factors such as production expenses, marketing costs, theater rental fees, and operational overhead significantly impact profitability but are not accounted for in this analysis. Ignoring costs limits the ability to assess the net financial health of Broadway productions and could lead to incomplete or misleading conclusions about the success of certain strategies or shows.
 
 ## Next Steps
 
 Incorporating additional variables, such as marketing expenditures, customer demographics, and customer experiences, could provide a deeper understanding of the factors influencing revenue. These information could be gathered in the future through detailed surveys aimed at collecting data on audience preferences, spending habits, and satisfaction levels. With this information, Broadway could develop more targeted marketing strategies tailored to different audience groups, allowing for customized promotions, pricing models, and programming that better address the unique needs of each segment, ultimately maximizing engagement and revenue.
 
-Future analyses could also employ more advanced models to address the limitations of linear assumptions. For example, exploring non-linear relationships and interaction effects between variables, such as the interplay between ticket prices and theater size or the varying impact of holiday weeks on revenue, could reveal important dynamics. 
+Future analyses could examine non-linear relationships and interactions between variables, such as the combined influence of ticket prices and theater size on attendance or how holiday weeks impact revenue differently based on theater capacity, providing a deeper understanding of revenue patterns.
 
-Additionally, conducting separate analyses for different types of productions, such as traditional shows versus new or experimental productions, would help identify the unique revenue drivers for each category. This segmentation would enable more precise strategy recommendations tailored to the specific needs and performance characteristics of different types of Broadway shows. Also, combining these advanced analyses with cost considerations would offer a holistic approach to optimizing Broadway’s economic sustainability.
-
+Additionally, conducting separate analyses for different types of productions, such as traditional shows versus new or experimental productions, would help identify the unique revenue drivers for each category. This segmentation would enable more precise strategy recommendations tailored to the specific needs and performance characteristics of different types of Broadway shows. Incorporating these analyses with cost considerations could offer a more detailed approach to optimizing Broadway's economic sustainability.
 \newpage
 
 \appendix
@@ -484,7 +484,7 @@ Additionally, conducting separate analyses for different types of productions, s
 
 ## Objective and Overview
 
-The purpose of this appendix is to outline an idealized methodology and survey design to supplement the current analysis of Broadway’s weekly gross revenue. By incorporating additional survey data and addressing gaps in the existing dataset, this methodology aims to enhance the understanding of revenue drivers, audience behaviors, and market dynamics. The survey is designed to capture demographic, behavioral, and experiential data that complement the operational metrics already analyzed in the study.
+The purpose of this appendix is to outline an idealized methodology and survey design to supplement the current analysis of Broadway’s weekly gross revenue. By incorporating additional survey data, this methodology aims to enhance the understanding of revenue drivers, audience behaviors, and market dynamics. The survey is designed to capture demographic, behavioral, and experiential data that complement the operational metrics already analyzed in the study.
 
 ## Core Objectives
 
@@ -496,7 +496,7 @@ The purpose of this appendix is to outline an idealized methodology and survey d
 
 Our sampling strategy utilizes **random sampling** to ensure unbiased representation of Broadway audiences. This approach randomly selects participants from the overall population of Broadway ticket buyers and attendees, minimizing potential biases and ensuring the sample reflects the diversity of the audience.
 
-Random sampling provides a robust foundation for generalizable analysis, capturing a wide range of perspectives and behaviors without targeting specific subgroups. By employing this method, the study aims to produce reliable and comprehensive insights into the factors influencing Broadway’s attendance and revenue dynamics.
+Random sampling provides a robust foundation for generalizable analysis, capturing a wide range of perspectives and behaviors without targeting specific subgroups. This method aims to generate accurate and thorough findings on the factors affecting Broadway’s attendance and revenue dynamics.
 
 A minimum sample size of 1,000 responses per quarter is proposed to ensure statistical robustness across strata and account for seasonality.
 
@@ -516,9 +516,9 @@ Participants will be recruited through a combination of:
 - **Anonymity and Privacy**: Personal data will be anonymized to encourage honest responses and comply with privacy regulations.
 
 ## Survey Design Considerations
-The survey is designed to be comprehensive but concise, ensuring high response rates while capturing actionable data. Key design considerations include:
+The survey is designed to balance thoroughness and brevity, aiming to achieve high response rates while collecting useful data. Important design elements include:
 
-- **Question Types**: A mix of multiple-choice, Likert scale, and open-ended questions to balance structured data collection with qualitative insights.
+- **Question Types**: A combination of multiple-choice, Likert scale, and open-ended questions balances structured data collection with qualitative input.
 - **Clarity**: Simple, jargon-free language to ensure accessibility for diverse audiences.
 
 **Focus Areas:**
@@ -704,7 +704,7 @@ Thank you for participating! Your feedback will play a vital role in enhancing t
 
 # Appendix: Additional Broadway Surveys and Data {#sec-Appendix2}
 
-Besides the dataset used for this study, Broadway also conducts several key surveys to gather comprehensive data on various aspects of Broadway theatre. However, the information and datasets collected through these surveys are not publicly accessible for analysis. If this data were made available, merging it with the current dataset could provide a more robust model for gross analysis. These surveys include **The Demographics of the Broadway Audience**, which is designed to provide insights into the composition and behavior of Broadway theatregoers.
+In addition to the dataset used for this study, Broadway conducts several key surveys to collect detailed information on various aspects of Broadway theater. However, the information and datasets collected through these surveys are not publicly accessible for analysis. If this data were made available, merging it with the current dataset could provide a more robust model for gross analysis. These surveys include **The Demographics of the Broadway Audience**, designed to analyze the composition and behavior of Broadway theatergoers.
 
 - **Sampling Method**: The survey is typically conducted annually, with performances selected quarterly to ensure a representative sample of Broadway's diverse offerings. This approach captures seasonal variations in the audience and provides a balanced dataset
 - **Recruitment Method**: 
@@ -713,7 +713,7 @@ Besides the dataset used for this study, Broadway also conducts several key surv
   - Wi-Fi Login Prompt: Patrons connecting to a theatre’s Wi-Fi are also invited to participate in the survey.
 These varied recruitment strategies aim to ensure a high response rate and broad representation of attendees.
 
-Broadway also records and analyzes additional information, such as Broadway's Economic Contribution to New York City, the Audience for Touring Broadway, and the Economic Impact of Touring Broadway. These surveys and studies help capture broader insights into Broadway's influence and reach, contributing to a more comprehensive understanding of its role in the cultural and economic landscape.
+Broadway also records and analyzes additional information, such as Broadway's Economic Contribution to New York City, the Audience for Touring Broadway, and the Economic Impact of Touring Broadway. These surveys and studies provide a broader understanding of Broadway's influence and reach, offering a more complete view of its cultural and economic significance.
 
 \newpage
 
@@ -736,7 +736,7 @@ plot(regression_model)
 
 As shown in @fig-diagnosis-1, these diagnostic plots indicate potential violations of the linear regression assumptions, suggesting the need for model refinements or transformations. 
 
-The curved pattern in the Residuals vs Fitted plot points to possible non-linearity, while the tails in the Q-Q plot highlight deviations from normality. Additionally, the trend observed in the Scale-Location plot suggests heteroscedasticity. Furthermore, the Residuals vs Leverage plot reveals points with high leverage and large residuals, indicating potential outliers that may disproportionately influence the model.
+The curved pattern in the Residuals vs Fitted plot points to possible non-linearity, while the tails in the Q-Q plot highlight deviations from normality. Additionally, the trend observed in the Scale-Location plot suggests heteroscedasticity. Furthermore, the Residuals vs Leverage plot shows points with high leverage and large residuals, indicating potential outliers that may disproportionately influence the model.
 
 \newpage
 ## Mean Squared Error and Mean Absolute Error on Test Data
