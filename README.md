@@ -14,9 +14,9 @@ The repo is structured as:
 -   `data/raw_data` the raw data obtained from https://github.com/tacookson/data/blob/master/broadway-grosses/grosses.csv.
 -   `data/analysis_data` contains the cleaned datasets, including the training and testing datasets used in the modeling process.
 -   `model` contains the RDS file for the fitted model.
--   `other` contains datasheets, relevant literature, documentation of LLM usage, and initial sketches.
+-   `other` contains datasheets, relevant literature, documentation of LLM usage, and sketches.
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
--   `scripts` contains the R scripts for tasks such as downloading data, simulating data, cleaning and preparing data, performing exploratory data analysis, and building and testing the model.
+-   `scripts` contains the R scripts for tasks such as downloading data, simulating data, testing simulated data, cleaning data, test analysis data, performing exploratory data analysis, and building the model.
 
 
 ## Statement on LLM usage
