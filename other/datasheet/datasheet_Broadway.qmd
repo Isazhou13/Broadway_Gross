@@ -11,15 +11,14 @@ number-sections: true
 bibliography: references.bib
 ---
 
-Extract of the questions from @gebru2021datasheets.
-
+This datasheet is the extract of the questions from @gebru2021datasheets. And it was put together with the help of @citeRohan 
 
 **Motivation**
 
 1. *For what purpose was the dataset created? Was there a specific task in mind? Was there a specific gap that needed to be filled? Please provide a description.*
     - The dataset was created to enable the analysis of weekly gross revenue for Broadway productions. While it does not address a specific gap, it provides a structured repository of gross data that is valuable for understanding industry trends and evaluating show performance.
 2. *Who created the dataset (for example, which team, research group) and on behalf of which entity (for example, company, institution, organization)?*
-    - The specific creators of the dataset have not been explicitly identified. However, it is likely associated with The Broadway League and their Internet Broadway Database (IBDB), the official archive for Broadway theatre information. IBDB serves as a comprehensive resource for historical and current Broadway data.
+    - The specific creators of the dataset have not been explicitly identified. However, it is likely associated with The Broadway League and their Internet Broadway Database (IBDB) [@ibdb_statistics], the official archive for Broadway theatre information. IBDB serves as a comprehensive resource for historical and current Broadway data.
 3. *Who funded the creation of the dataset? If there is an associated grant, please provide the name of the grantor and the grant name and number.*
     - Information regarding the funding source for the creation of the dataset is not currently available. However, The Broadway League operates in partnership with entities such as Chase and The New York Times, which may have contributed to its initiatives.
 4. *Any other comments?*
@@ -34,6 +33,8 @@ Extract of the questions from @gebru2021datasheets.
 3. *Does the dataset contain all possible instances or is it a sample (not necessarily random) of instances from a larger set? If the dataset is a sample, then what is the larger set? Is the sample representative of the larger set (for example, geographic coverage)? If so, please describe how this representativeness was validated/verified. If it is not representative of the larger set, please describe why not (for example, to cover a more diverse range of instances, because instances were withheld or unavailable).*
 	-  The dataset includes all available instances of weekly gross data for Broadway productions in New York City, as collected by The Broadway League.
 4. *What data does each instance consist of? "Raw" data (for example, unprocessed text or images) or features? In either case, please provide a description.*
+
+The raw data and the accompanying data dictionary are provided by @cookson_broadway. 
 
   - week_ending: 	Date of the end of the weekly measurement period. Always a Sunday.
   -week_number: Week number in the Broadway season. The season starts after the Tony Awards, held in early June. Some seasons have 53 weeks.
@@ -89,7 +90,7 @@ Extract of the questions from @gebru2021datasheets.
 6. *Were any ethical review processes conducted (for example, by an institutional review board)? If so, please provide a description of these review processes, including the outcomes, as well as a link or other access point to any supporting documentation.*
 	- No.
 7. *Did you collect the data from the individuals in question directly, or obtain it via third parties or other sources (for example, websites)?*
-	- I downloaded the data from a publicly available GitHub repository, which sourced the information from the Playbill website. The link for the GitHub is: https://github.com/tacookson/data/tree/master/broadway-grosses
+	- I obtained the data via third parties. I downloaded the data from a publicly available GitHub repository provided by @cookson_broadway, which sourced the information from the Playbill website [@playbill_grosses]. The link for the GitHub is [broadway_grosses](https://github.com/tacookson/data/tree/master/broadway-grosses). The @citeR package is used for downloading the data.
 8. *Were the individuals in question notified about the data collection? If so, please describe (or show with screenshots or other information) how notice was provided, and provide a link or other access point to, or otherwise reproduce, the exact language of the notification itself.*
 	- For tickets purchased online, users are presented with terms and conditions when creating an account. However, it remains unclear how information from previous years was collected or whether individuals were notified during that process.
 9. *Did the individuals in question consent to the collection and use of their data? If so, please describe (or show with screenshots or other information) how consent was requested and provided, and provide a link or other access point to, or otherwise reproduce, the exact language to which the individuals consented.*
@@ -107,9 +108,9 @@ Extract of the questions from @gebru2021datasheets.
 	- Yes, the data cleaning for this study is complete. The raw data included a week_ending column that combined the year, month, and date into a single cell. To address this, the code was used to separate these elements into distinct columns. Unnecessary columns for this study, such as `weekly_gross_overall`, `show`, `theatre`, `potential_gross`, `top_ticket_price`, `seats_sold`, `pct_capacity`, and `previews`, were removed.
 	 A new column, `holiday_week`, was created, with values marked as 1 for weeks corresponding to Independence Day, Labor Day, Thanksgiving, Christmas, and New Year's Week. Additionally, a `Tony_Awards` column was constructed to indicate whether a given month corresponds to the Tony Awards period. The Tony Awards is a prestigious theater award typically held in June. Moreover, the data is limited to the most recent decade, specifically from 2010 to 2020. Unreasonable values were filtered out, such as shows with an average ticket price of 0.
 2. *Was the "raw" data saved in addition to the preprocessed/cleaned/labeled data (for example, to support unanticipated future uses)? If so, please provide a link or other access point to the "raw" data.*
-	- Yes. The raw data is saved. It can be accessed at: https://github.com/tacookson/data/blob/master/broadway-grosses/grosses.csv
+	- Yes, the raw data is saved. It can also be accessed at [this link](https://github.com/tacookson/data/blob/master/broadway-grosses/grosses.csv).
 3. *Is the software that was used to preprocess/clean/label the data available? If so, please provide a link or other access point.*
-	- The software used is R Programming Language. 
+	- The software used is R Programming Language [@citeR]. 
 4. *Any other comments?*
 	-  No further comments 
 
@@ -160,7 +161,7 @@ Extract of the questions from @gebru2021datasheets.
 6. *Will older versions of the dataset continue to be supported/hosted/maintained? If so, please describe how. If not, please describe how its obsolescence will be communicated to dataset consumers.*
 	- There is no information regarding this issue.
 7. *If others want to extend/augment/build on/contribute to the dataset, is there a mechanism for them to do so? If so, please provide a description. Will these contributions be validated/verified? If so, please describe how. If not, why not? Is there a process for communicating/distributing these contributions to dataset consumers? If so, please provide a description.*
-	- They can contact the Internet Broadway Database using the form available at https://form.jotform.com/broadwayleague/ibdb-contact-form. This form can be used to contact Broadway with questions or to provide additional information. However, any updates made may only be reflected in the Broadway database and not in the GitHub repository.
+	- They can contact the Internet Broadway Database using the form available [here](https://form.jotform.com/broadwayleague/ibdb-contact-form). This form can be used to contact Broadway with questions or to provide additional information. However, any updates made may only be reflected in the Broadway database and not in the GitHub repository.
 8. *Any other comments?*
 	- No further comments. 
 
