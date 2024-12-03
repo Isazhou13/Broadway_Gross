@@ -22,7 +22,8 @@ library(ggplot2)
 library(knitr)
 library(arrow)
 library(here)
-library(scales) 
+library(scales)
+library(modelsummary)
 
 analysis_data <- read_parquet(here("data", "02-analysis_data", "cleaned_broadway_grosses.parquet"))
 ```
@@ -45,7 +46,7 @@ The remainder of this paper is structured as follows: @sec-data provides an over
 
 ## Overview
 
-This study utilizes R packages [@citeR] for data cleaning and analysis, incorporating libraries from tidyverse [@tidyverse], ggplot2 [@ggplot2], knitr [@knitr], arrow [@arrow], here [@here] and scales [@scales]. The **tidyverse** package is employed for data manipulation, such as filtering, grouping, and reshaping datasets. **ggplot2** is used for data visualization, creating a range of plots to explore and present trends in the data. **knitr** facilitates the integration of analysis and reporting by generating dynamic reports in R Markdown. **arrow** is used for efficient handling of large datasets, particularly for reading and writing data in Parquet format to optimize storage and processing. The **here** package ensures reproducibility by standardizing file paths in the project directory, making it easier to locate and load data files. Finally, **scales** is employed to enhance the readability of plots by formatting axes, labels, and scales, ensuring clarity in the presentation of numeric and categorical data.
+This study utilizes R packages [@citeR] for data cleaning and analysis, incorporating libraries from tidyverse [@tidyverse], ggplot2 [@ggplot2], knitr [@knitr], arrow [@arrow], here [@here], scales [@scales], and modelsummary [@modelsummary]. The **tidyverse** package is employed for data manipulation, such as filtering, grouping, and reshaping datasets. **ggplot2** is used for data visualization, creating a range of plots to explore and present trends in the data. **knitr** facilitates the integration of analysis and reporting by generating dynamic reports in R Markdown. **arrow** is used for efficient handling of large datasets, particularly for reading and writing data in Parquet format to optimize storage and processing. The **here** package ensures reproducibility by standardizing file paths in the project directory, making it easier to locate and load data files. Finally, **scales** is employed to enhance the readability of plots by formatting axes, labels, and scales, ensuring clarity in the presentation of numeric and categorical data.
 
 The dataset, compiled by Alex Cookson [@cookson_broadway_grosses] and derived from data originally provided by Playbill [@playbill_grosses], represents Broadway's weekly grosses. The data cleaning process involved grouping observations and removing missing values. The final dataset consists of 14,519 observations across 9 variables: `week_number`, `weekly_gross`, `avg_ticket_price`, `seats_in_threatre`, `performances`, `year`, `month`, `holiday_week` and `Tony_Award`. The dataset used for this analysis spans from the beginning of 2010 to the end of 2019.
 
@@ -393,40 +394,56 @@ For holiday weeks, we predict a positive effect on weekly gross revenue, as holi
 Finally, the year variable is included to account for long-term trends, with an expected positive effect reflecting the steady growth of Broadway's gross revenue over the years.
 
 # Results {#sec-results}
+The results of the multiple linear regression model are presented in @fig-model, with more detailed information summarized in @tbl-modelresults in [Appendix -@sec-model]. While some findings align with our expectations, others reveal notable deviations.
 
-The results of the multiple linear regression model is summarized in the @tbl-modelresults. The result matches with some of our expectations while deviating in other areas. 
-
-As anticipated, average ticket price, seating in theater, and number of performances exhibit significant positive relationships with weekly gross revenue. Specifically, increases in ticket prices and theater size lead to higher gross revenue, consistent with the notion that larger venues and premium ticketing contribute to revenue growth. Similarly, the significant positive impact of the number of performances aligns with our expectation that additional shows increase overall revenue by accommodating more audiences.
+As anticipated, average ticket price, seating in theater, and number of performances exhibit significant positive relationships with weekly gross revenue. Specifically, increases in ticket prices and theater size lead to higher gross revenue, consistent with the notion that larger venues and premium ticketing contribute to revenue growth. Similarly, the significant positive impact of the number of performances aligns with our expectation that additional shows increase overall revenue by accommodating more audiences. Notably, the confidence intervals for these estimates are relatively narrow, suggesting that the relationships are estimated with high precision and are robust.
 
 The findings for holiday weeks also meet initial expectations, showing a positive relationship with weekly gross revenue. This result suggests that increased demand during holiday periods effectively boosts ticket sales, contributing to higher overall revenue.
 
-However, the results for Tony Award months diverge from our initial expectations. Contrary to the assumption that Tony Award months would boost revenue due to increased demand or publicity, the coefficients for these variables are negative, indicating a slight decrease in weekly gross revenue during these periods. 
+The results for Tony Award months diverge from our initial expectations. Contrary to the assumption that Tony Award months would boost revenue due to increased demand or publicity, the coefficients for these variables are negative, suggesting a slight decrease in weekly gross revenue during these periods. Additionally, the confidence interval for this variable is wide and crosses zero, indicating uncertainty about the direction and magnitude of the effect. This suggests that the observed negative coefficient may not represent a consistent trend and warrants caution when interpreting the impact of Tony Award months on revenue.
 
-Lastly, the year variable exhibits a small but positive effect, consistent with the expectation of a gradual upward trend in Broadway revenue over the years. This reflects the broader growth of the industry, potentially due to factors such as inflation. Overall, the model confirms some hypotheses while highlighting discrepancies in the data, prompting further discussion and analysis in the next section.
+Lastly, the year variable exhibits a small but positive effect, consistent with the expectation of a gradual upward trend in Broadway revenue over the years. The relatively narrow confidence interval for this variable provides strong support for the observed trend, likely reflecting the broader growth of the industry due to factors such as inflation or expanding audience engagement. Overall, the model confirms some hypotheses while highlighting discrepancies in the data, prompting further discussion and analysis in the next section.
+
 
 ```{r}
+#| label: fig-model
+#| fig-cap: Coefficient plot illustrating the estimated effects of predictor variables on the response variable. Each point represents the estimated coefficient, and the horizontal lines denote the 95% confidence intervals for each coefficient. Positive values indicate an increasing effect on the response variable, while negative values indicate a decreasing effect.
 #| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: Regression Results for Weekly Gross. This table displays the coefficients, standard errors, and t-statistics for the multiple linear regression model used to analyze the factors influencing weekly gross for Broadway.  
-#| warning: false
 
 # Load the regression model
 regression_model <- readRDS(here::here("models/regression_model.rds"))
-summary <- summary(regression_model)
 
-# Extract the coefficients and form a table with estimates, standard errors, and t-values
-coefficients_table <- as.data.frame(summary$coefficients[, 1:3])
+# Create a custom coefficient name mapping
+custom_coef_names <- c(
+  "avg_ticket_price" = "Average Ticket Price",
+  "seats_in_theatre" = "Seats in Theatre",
+  "performances" = "Number of Performances",
+  "holiday_week" = "Holiday Week Indicator",
+  "Tony_Award" = "Tony Award Winner",
+  "year" = "Year"
+)
 
-# Rename the columns
-colnames(coefficients_table) <- c("Coefficient", "Standard Error", "t-Statistic")
+# Extract the data from the modelplot object for labeling
+plot_data <- modelplot(
+  list("Model Name" = regression_model),
+  coef_map = custom_coef_names
+)$data
 
-# Display the table
-kable(coefficients_table, digits = 2)
+# Ensure the terms are ordered and labeled appropriately
+plot_data$term <- factor(plot_data$term, levels = custom_coef_names)
 
+# Generate the coefficient plot with labeled points
+coef_plot <- ggplot(plot_data, aes(x = term, y = estimate)) +
+  geom_point(size = 2.5) +  # Plot the coefficients as points
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +  # Add confidence intervals
+  geom_text(aes(label = round(estimate, 2)), vjust = -1, size = 3) +  # Add coefficient labels
+  coord_flip() +  # Flip the axes for better readability
+  theme_minimal() +  # Use a clean theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
+
+# Display the plot
+print(coef_plot)
 ```
-
-
 # Discussion {#sec-discussion}
 
 ## Key Findings {#sec-first-point}
@@ -811,7 +828,44 @@ corrplot(
 
 In @fig-correlation, a correlation check is performed. The matrix confirms the assumption of low multicollinearity among predictors, supporting the reliability of coefficient estimates in the regression model.
 
+\newpage
+## Model Summary
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: Regression Results for Weekly Gross. This table displays the coefficients and their confidence intervalsfor the multiple linear regression model used to analyze the factors influencing weekly gross for Broadway.  
+#| warning: false
+
+# Load the regression model
+regression_model <- readRDS(here::here("models/regression_model.rds"))
+
+# Create a mapping of old names to new names
+custom_coef_names <- c(
+  "avg_ticket_price" = "Average Ticket Price",
+  "seats_in_theatre" = "Seats in Theatre",
+  "performances" = "Number of Performances",
+  "holiday_week" = "Holiday Week Indicator",
+  "Tony_Award" = "Tony Award Winner",
+  "year" = "Year"
+)
+
+# Generate the summary table with custom coefficient names
+output_table <- modelsummary(
+  list("Multiple Linear Regression" = regression_model), 
+  statistic = "conf.int",
+  coef_map = custom_coef_names, # Apply custom coefficient names
+  output = "kableExtra"
+)
+
+# Display the table
+output_table
+
+```
+
+\newpage
 # Additional Visulization
+
 ```{r}
 #| label: fig-facet-by-year
 #| fig-cap: Average Weekly Gross Revenue Trends Across Months, spanning from 2010 to 2019.
@@ -850,6 +904,8 @@ data_monthly <- data_monthly %>%
   mutate(year = as.factor(year))  # Convert year to a factor
 
 ```
+
+
 \newpage
 
 # Acknowledgements
