@@ -2,11 +2,11 @@
 title: "Understanding Broadway Gross: Key Factors and Growth Strategies"
 subtitle: "Optimizing Revenue Per Seat While Addressing Modest Holiday Gains and Revenue Declines in Tony Award Months"
 author: "Xuanel Zhou"
-thanks: "Code and data are available at: [Broadway_Gross](https://github.com/Isazhou13/Broadway_Gross)."
+thanks: "Code and data are available at: [Broadway Gross](https://github.com/Isazhou13/Broadway_Gross)."
 date: today
 date-format: long
 toc: true
-abstract: "This study examines factors influencing weekly gross revenue on Broadway, focusing on key predictors such as average ticket price, seating capacity, number of performances, holiday weeks, and Tony Award months. A $1 increase in average ticket price adds $9,168 to weekly revenue, while an additional performance contributes $70,688, and each new seat generates $699.82, underscoring the importance of pricing and demand strategies over simply expanding seating capacity. Holiday weeks boost revenue by $16,684, but this modest increase relative to NYC’s tourism surge shows untapped potential for Broadway to enhance its appeal as a premier holiday destination. Conversely, Tony Award months are linked to a $7,140 decline in weekly revenue, highlighting the need to reposition the awards season as an industry-wide promotional opportunity to benefit all productions."
+abstract: "This study examines factors influencing weekly gross revenue on Broadway, focusing on key predictors including average ticket price, seating capacity, number of performances, holiday weeks, and Tony Award months. A $1 increase in average ticket price adds $9,168 to weekly revenue, while an additional performance contributes $70,688, and each new seat generates $699.82, underscoring the importance of pricing and demand strategies over simply expanding seating capacity. Holiday weeks boost revenue by $16,684, but this modest increase relative to NYC’s tourism surge shows untapped potential for Broadway to enhance its appeal as a premier holiday destination. Conversely, Tony Award months are linked to a $7,140 decline in weekly revenue, highlighting the need to reposition the awards season as an industry-wide promotional opportunity to benefit all productions."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -46,7 +46,9 @@ The remainder of this paper is structured as follows: @sec-data provides an over
 
 ## Overview
 
-This study utilizes R packages [@citeR] for data cleaning and analysis, incorporating libraries from tidyverse [@tidyverse], ggplot2 [@ggplot2], knitr [@knitr], arrow [@arrow], here [@here], scales [@scales], and modelsummary [@modelsummary]. The **tidyverse** package is employed for data manipulation, such as filtering, grouping, and reshaping datasets. **ggplot2** is used for data visualization, creating a range of plots to explore and present trends in the data. **knitr** facilitates the integration of analysis and reporting by generating dynamic reports in R Markdown. **arrow** is used for efficient handling of large datasets, particularly for reading and writing data in Parquet format to optimize storage and processing. The **here** package ensures reproducibility by standardizing file paths in the project directory, making it easier to locate and load data files. Finally, **scales** is employed to enhance the readability of plots by formatting axes, labels, and scales, ensuring clarity in the presentation of numeric and categorical data.
+This study utilizes R packages [@citeR] for data cleaning and analysis, incorporating libraries from tidyverse [@tidyverse], ggplot2 [@ggplot2], knitr [@knitr], arrow [@arrow], here [@here], scales [@scales], and modelsummary [@modelsummary]. 
+
+The **tidyverse** package is employed for data manipulation, such as filtering, grouping, and reshaping datasets. **ggplot2** is used for data visualization, creating a range of plots to explore and present trends in the data. **knitr** facilitates the integration of analysis and reporting by generating dynamic reports in R Markdown. **arrow** is used for efficient handling of large datasets, particularly for reading and writing data in Parquet format to optimize storage and processing. The **here** package ensures reproducibility by standardizing file paths in the project directory, making it easier to locate and load data files. Finally, **scales** is employed to enhance the readability of plots by formatting axes, labels, and scales, ensuring clarity in the presentation of numeric and categorical data.
 
 The dataset, compiled by Alex Cookson [@cookson_broadway_grosses] and derived from data originally provided by Playbill [@playbill_grosses]. The data cleaning process involved grouping observations and removing missing values. The final dataset consists of 14,519 observations across 9 variables: `week_number`, `weekly_gross`, `avg_ticket_price`, `seats_in_threatre`, `performances`, `year`, `month`, `holiday_week` and `Tony_Award`. The dataset used for this analysis spans from the beginning of 2010 to the end of 2019.
 
@@ -56,7 +58,7 @@ The dataset for this study originates from Playbill [@playbill_grosses], which c
 
 The transformation of real-world phenomena into the dataset begins with data collection. The Internet Broadway Database (IBDB), maintained by The Broadway League, compiles detailed records of Broadway productions using theater programs to document cast and crew information [@ibdb_about]. Additional data is supplemented by newspaper and magazine reports, theatrical textbooks, interviews with theater professionals, and The League's archival records. This information is then processed into key metrics, including ticket sales, attendance, revenue, and theater utilization, which are published weekly. Before release, The League’s research department verifies the data’s accuracy and removes personal information to ensure privacy.
 
-However, converting real-world phenomena into publicly available dataset entries inevitably leads to the loss of important contextual details in such circumstances. For example, productions that include premium tickets or standing-room sales may disproportionately increase weekly grosses compared to those without these options. While the dataset includes a top ticket price metric, it does not specify the number of tickets sold at this price, leaving gaps in understanding revenue dynamics. Similarly, discounts and promotions, such as rush tickets or group sales, can lower the average ticket price, potentially underestimating the perceived value of tickets sold. Additionally, although the dataset includes weekly metrics, it does not specify whether performances took place on weekdays or weekends, limiting the analysis of gross patterns. These limitations underscore the challenges of translating complex industry data into simplified metrics for analysis.
+However, converting real-world phenomena into publicly available dataset entries inevitably leads to the loss of important contextual details in such circumstances. For example, while the dataset includes a top ticket price metric, it does not specify the number of tickets sold at this price, making it challenging to fully understand revenue dynamics. Similarly, discounts and promotions, such as rush tickets or group sales, can lower the average ticket price, potentially underestimating the perceived value of tickets sold. Additionally, although the dataset includes weekly metrics, it does not specify whether performances took place on weekdays or weekends, limiting the analysis of gross patterns. These limitations underscore the challenges of translating complex industry data into simplified metrics for analysis.
 
 ## Outcome variables
 
@@ -87,7 +89,7 @@ The outcome variable of interest for this study is the weekly gross revenue for 
 
 ### Year
 
-@fig-yearly captures the Broadway industry's growth over the decade. The yearly averages were calculated by averaging the weekly gross revenue across all Broadway shows for each year. The chart shows a steady increase in average yearly gross revenue, reflecting overall industry growth. From 2013 to 2015, revenues remain relatively stable, followed by sharp growth from 2016 onward, peaking in 2019. A slight dip in 2020 likely reflects the impact of the COVID-19 pandemic on Broadway operations.
+@fig-yearly captures the Broadway industry's growth over the decade. The yearly averages were calculated by averaging the weekly gross revenue across all Broadway shows for each year. It shows a steady increase in average yearly gross revenue, reflecting overall industry growth. From 2013 to 2015, revenues remain relatively stable, followed by sharp growth from 2016 onward, peaking in 2018. 
 
 ```{r}
 #| label: fig-yearly
@@ -150,7 +152,7 @@ ggplot(analysis_data, aes(x = week_ending, y = weekly_gross)) +
 
 
 ```
-@fig-week_ending provides detailed information on weekly gross revenues, showing that most values clusters predominantly in the range of $300,000 to $2,000,000, which aligns with the results shown in @fig-weekly_gross. However, there is a gradual upward trend in the maximum weekly gross over the years, indicating that the Broadway industry experienced growth during this period.
+@fig-week_ending provides detailed information on weekly gross revenues, showing that most values clusters predominantly in the range of $300,000 to $2,000,000, which aligns with @fig-weekly_gross. However, there is a gradual upward trend in the maximum weekly gross over the years, indicating that the Broadway industry experienced growth during this period.
 
 Earlier years (2010–2012) show a compact distribution of weekly gross. From 2015 onward, the range widens, with both higher peaks and broader variation between the lowest and highest values, reflecting increased performance variability among Broadway shows. Notably, some shows at some weeks after 2015 exceed $3,000,000, indicating more outliers and growing disparities between top-performing shows and others, likely influenced by audience preferences, pricing, and industry growth. These peaks are more commonly observed at the end of the year, suggesting a seasonal effect, likely tied to holiday demand and special events.
 
@@ -176,7 +178,7 @@ ggplot(analysis_data, aes(x = avg_ticket_price)) +
     axis.text.y = element_text(size = 10)
   )
 ```
-@fig-avg_ticket_price shows the majority of average ticket prices are concentrated around $100, with a peak frequency between $80 and $120. The right skewed distribution, indicating that while most ticket prices are relatively affordable, there are instances of higher ticket prices extending beyond $300, with a few exceeding $500.
+@fig-avg_ticket_price shows most average ticket prices are concentrated around $100, with a peak frequency between $80 and $120. The right skewed distribution, indicating that while most ticket prices are relatively affordable, there are instances of higher ticket prices extending beyond $300, with a few exceeding $500.
 
 ### Theatre seat capacity
 
@@ -226,7 +228,7 @@ ggplot(analysis_data, aes(x = performances)) +
   )
 
 ```
-@fig-performances highlights the consistency in Broadway’s performance schedules, with the vast majority of shows performing 8 times per week, reaching a frequency of over 10,000 occurrences. A small number of shows have fewer or occasionally more than 8 performances per week, likely due to special events, holidays, or production adjustments.
+@fig-performances highlights the consistency in Broadway’s performance schedules, with most shows performing 8 times per week, reaching a frequency of over 10,000 occurrences. A small number of shows have fewer or occasionally more than 8 performances per week, likely due to special events, holidays, or production adjustments.
 
 ### Holiday Week
 
@@ -456,7 +458,9 @@ The balance between ticket price and capacity is particularly significant, as a 
 
 ## Maximizing Holiday Demand
 
-The model results show that holiday weeks increase weekly gross revenue by an average of $16,684, reflecting a notable seasonal boost and aligning with expectations of higher audience availability during festive periods. Holiday weeks are a time when families often travel or plan special outings, and New York City, home to Broadway, becomes a global attraction with iconic events like the Rockefeller Center Christmas Tree Lighting, bustling holiday markets, and the New Year’s Eve Ball Drop in Times Square. This festive atmosphere draws millions of tourists. However, the relatively modest increase of $16,684 per week suggests that Broadway may not be fully capitalizing on its unique position as a holiday destination. Studies on tourist behavior during holidays indicate that travelers are more inclined to seek unique and memorable experiences during festive periods [@pearce2013minds], creating a prime opportunity for Broadway to enhance its gross revenue and establish itself as a must-visit holiday experience.
+The model results show that holiday weeks increase weekly gross revenue by an average of $16,684, reflecting a notable seasonal boost and aligning with expectations of higher audience availability during festive periods. Holiday weeks are a time when families often travel or plan special outings, and New York City, home to Broadway, becomes a global attraction with iconic events like the Rockefeller Center Christmas Tree Lighting, bustling holiday markets, and the New Year’s Eve Ball Drop in Times Square. This festive atmosphere draws millions of tourists. 
+
+However, the relatively modest increase of $16,684 per week suggests that Broadway may not be fully capitalizing on its unique position as a holiday destination. Studies on tourist behavior during holidays indicate that travelers are more inclined to seek unique and memorable experiences during festive periods [@pearce2013minds], creating a prime opportunity for Broadway to enhance its gross revenue and establish itself as a must-visit holiday experience.
 
 To better take advantage of its location and the influx of holiday visitors, Broadway could implement targeted strategies to make attending shows more convenient and appealing. Collaborating with hotels, travel agencies, and tourism boards to provide bundled holiday packages that include show tickets could position Broadway as an essential part of visitors’ holiday itineraries. Moreover, enhancing the on-site experience with seasonal concessions, festive decor, and exclusive holiday merchandise could create a more engaging and memorable experience, attracting more visitors and driving additional revenue during this lucrative season.
 
@@ -464,7 +468,9 @@ To better take advantage of its location and the influx of holiday visitors, Bro
 
 Tony Award months show a negligible or slightly negative impact on overall revenue, with an estimated effect of $-7,140, challenging the assumption that the awards season boosts Broadway’s financial performance. However, @boyle2009broadway finds that Tony Awards increase a production’s revenue by 12% in the week immediately following the event. This discrepancy likely stems from media attention and ticket sales being concentrated on a few nominated or winning shows, while most productions see little benefit. Additionally, @reddy1998exploring highlights the significant role of critics’ reviews in driving Broadway success, further emphasizing the missed opportunity to use the publicity generated by the Tony Awards to benefit all productions more broadly.
 
-Thus, Broadway could transform the Tony Awards into an industry-wide promotional platform by adopting strategies that engage a broader audience and distribute the benefits more equitably, extending beyond just the nominated and award-winning productions. Collaborating with media outlets to produce exclusive behind-the-scenes content, interviews with nominees, and live coverage of performances from non-nominated shows could help expand the appeal of the awards season. Additionally, launching a "Broadway Awards Week" featuring discounted tickets, special packages, or unique experiences such as backstage tours could encourage attendance across multiple productions, leveraging the awards buzz to increase overall industry revenue. Centralized marketing campaigns highlighting the diversity and vibrancy of Broadway’s productions during this period could further enhance engagement and boost ticket sales across the ecosystem. By shifting the focus from individual winners to promoting the broader Broadway experience, the industry could transform the slight revenue decline during Tony Award months into a period of growth and shared success for all productions.
+Thus, Broadway could transform the Tony Awards into an industry-wide promotional platform by adopting strategies that engage a broader audience and distribute the benefits more equitably, extending beyond just the nominated and award-winning productions. Collaborating with media outlets to produce exclusive behind-the-scenes content, interviews with nominees, and live coverage of performances from non-nominated shows could help expand the appeal of the awards season. 
+
+Additionally, launching a "Broadway Awards Week" featuring discounted tickets, special packages, or unique experiences such as backstage tours could encourage attendance across multiple productions, leveraging the awards buzz to increase overall industry revenue. By shifting the focus from individual winners to promoting the broader Broadway experience, the industry could transform the slight revenue decline during Tony Award months into a period of growth and shared success for all productions.
 
 
 ## Weaknesses  
@@ -503,7 +509,7 @@ The purpose of this appendix is to outline an idealized methodology and survey d
 
 ## Sampling Strategy
 
-Our sampling strategy utilizes ** simple random sampling** to ensure unbiased representation of Broadway audiences. This approach randomly selects participants from the overall population of Broadway ticket buyers and attendees, minimizing potential biases and ensuring the sample reflects the diversity of the audience.
+Our sampling strategy utilizes **simple random sampling** to ensure unbiased representation of Broadway audiences. This approach randomly selects participants from the overall population of Broadway ticket buyers and attendees, minimizing potential biases and ensuring the sample reflects the diversity of the audience.
 
 Random sampling provides a robust foundation for generalizable analysis, capturing a wide range of perspectives and behaviors without targeting specific subgroups [@noor2022simple]. This method aims to generate accurate and thorough findings on the factors affecting Broadway’s attendance and revenue dynamics.
 
@@ -704,7 +710,7 @@ What additional suggestions do you have to improve the Broadway experience?
 
 Thank you for participating! Your feedback will play a vital role in enhancing the Broadway experience for future audiences. If you have any questions about this survey or would like to be informed about the results, please contact **isabella.zhou@mail.utoronto.ca**
 
-The survey will be implemented via **Google Forms**, which provids a cost-effective platform for data collection. You can access the survey at the following link: [Google Form Survey](https://docs.google.com/forms/d/e/1FAIpQLScAcdMoMbkOcOnZ_dPCV9xqiN-RMoCjisHEieW84dVjVMMiIA/viewform)
+The survey will be implemented via **Google Forms**, which provids a cost-effective platform for data collection. You can access the survey at the following link: [Google Form - Broadway Audience Survey Form](https://docs.google.com/forms/d/e/1FAIpQLScAcdMoMbkOcOnZ_dPCV9xqiN-RMoCjisHEieW84dVjVMMiIA/viewform)
 
 \newpage
 
